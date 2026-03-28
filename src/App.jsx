@@ -630,10 +630,10 @@ export default function App() {
                 <AnimatePresence>
                   {feedback === 'correct' && earnedPoints !== null && (
                     <MotionDiv
-                      initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.92 }}
-                      className="absolute right-0 top-[calc(50%+2.25rem)] sm:top-[calc(50%+3.25rem)] translate-x-[6%] px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none lg:right-[10%] lg:top-[calc(50%+3.5rem)]"
+                      className="absolute right-[calc(50%-10.5rem)] top-[calc(50%-2.5rem)] sm:right-[calc(50%-12rem)] sm:top-[calc(50%-3rem)] lg:right-[1.5rem] lg:top-[calc(50%-3.5rem)] px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
                     >
                       +{earnedPoints} 分
                     </MotionDiv>
