@@ -26,7 +26,7 @@ function ScreenWrapper({ children }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-4xl mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-[80vh]"
+      className="w-full max-w-4xl mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center min-h-[100dvh] md:min-h-[80dvh]"
     >
       {children}
     </MotionDiv>
@@ -287,7 +287,7 @@ export default function App() {
   }, [gameState, handleDelete, handleInput, handleSubmit]);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
       {/* Decorative Background Shapes */}
       <div className="shape w-[26rem] h-[26rem] bg-[#ffd86b] top-[-8%] left-[-8%]" />
       <div className="shape w-[24rem] h-[24rem] bg-[#8be9cd] bottom-[2%] right-[-6%]" />
