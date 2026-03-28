@@ -22,8 +22,8 @@ const SOUND_BGM = `${import.meta.env.BASE_URL}audio/game-bgm.mp3`;
 const BGM_VOLUME = 0.14;
 const MotionDiv = motion.div;
 const QUESTION_POOL = Array.from({ length: 8 }, (_, i) => i + 2).flatMap((num1) =>
-  Array.from({ length: 10 - num1 }, (_, offset) => {
-    const num2 = num1 + offset;
+  Array.from({ length: 8 }, (_, j) => {
+    const num2 = j + 2;
     return { num1, num2, answer: num1 * num2 };
   })
 );
