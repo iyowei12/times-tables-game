@@ -1,46 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --sky: #67c8ff;
+    --sky-deep: #2596eb;
+    --mint: #9be7c4;
+    --mint-deep: #35b98b;
+    --sun: #ffd86b;
+    --sun-deep: #ffb938;
+    --peach: #ff9f7f;
+    --peach-deep: #ff7a59;
+    --berry: #ff5ca8;
+    --berry-soft: #ffd6eb;
+    --ink: #21415f;
+    --ink-soft: #5f7890;
+    --panel: rgba(255, 255, 255, 0.78);
+    --panel-border: rgba(255, 255, 255, 0.72);
+    --panel-shadow: 0 24px 60px rgba(69, 112, 151, 0.18);
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
   body {
-    @apply antialiased text-slate-800;
-    background: radial-gradient(circle at top left, #e0e7ff 0%, #ffffff 100%);
+    margin: 0;
     min-height: 100vh;
     overflow-x: hidden;
+    color: var(--ink);
+    font-family: "Noto Sans TC", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(circle at top left, rgba(255, 244, 179, 0.95) 0%, rgba(255, 244, 179, 0) 26%),
+      radial-gradient(circle at top right, rgba(139, 233, 205, 0.9) 0%, rgba(139, 233, 205, 0) 30%),
+      radial-gradient(circle at 18% 78%, rgba(137, 210, 255, 0.9) 0%, rgba(137, 210, 255, 0) 24%),
+      linear-gradient(180deg, #fffdf5 0%, #eef8ff 54%, #f7fff7 100%);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+      radial-gradient(circle at 20px 20px, rgba(255, 255, 255, 0.9) 0 6px, transparent 7px),
+      radial-gradient(circle at 70px 55px, rgba(255, 255, 255, 0.7) 0 4px, transparent 5px);
+    background-size: 120px 120px;
+  }
+
+  button,
+  input {
+    font: inherit;
   }
 }
 
+#root {
+  min-height: 100vh;
+}
+
+.display-font {
+  font-family: "Baloo 2", "Noto Sans TC", sans-serif;
+}
+
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(18px);
 }
 
-.glass-dark {
-  @apply bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-2xl;
-}
-
-/* Custom button hover effects */
 .btn-primary {
-  @apply bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl transition-all active:scale-95 shadow-lg hover:shadow-indigo-500/30;
+  @apply text-white font-black py-4 px-8 rounded-[1.75rem] transition-all active:scale-95;
+  background: linear-gradient(135deg, var(--peach-deep), var(--sun-deep));
+  box-shadow: 0 14px 30px rgba(255, 145, 89, 0.34);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(255, 145, 89, 0.4);
 }
 
 .btn-secondary {
-  @apply bg-white hover:bg-slate-50 text-indigo-600 font-bold py-4 px-8 rounded-2xl transition-all active:scale-95 shadow-md border border-indigo-100;
+  @apply font-black py-4 px-8 rounded-[1.75rem] transition-all active:scale-95;
+  color: var(--sky-deep);
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(103, 200, 255, 0.24);
+  box-shadow: 0 10px 24px rgba(112, 159, 199, 0.15);
 }
 
-/* Animated Background Shapes */
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 1);
+}
+
 .shape {
   position: fixed;
   z-index: -1;
-  filter: blur(60px);
-  border-radius: 50%;
-  opacity: 0.5;
-  animation: float 20s infinite alternate;
+  filter: blur(70px);
+  border-radius: 999px;
+  opacity: 0.65;
+  animation: float 18s infinite alternate ease-in-out;
+}
+
+.shape-dot {
+  position: fixed;
+  z-index: -1;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  opacity: 0.55;
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.35);
 }
 
 @keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(10vw, 10vh) scale(1.2); }
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(6vw, 5vh, 0) scale(1.18);
+  }
 }
