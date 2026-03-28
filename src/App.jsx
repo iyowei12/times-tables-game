@@ -20,13 +20,16 @@ const SOUND_WRONG = 'https://assets.mixkit.co/active_storage/sfx/2955/2955-previ
 const SOUND_FINISH = 'https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3';
 const MotionDiv = motion.div;
 
-function ScreenWrapper({ children }) {
+function ScreenWrapper({ children, className }) {
   return (
     <MotionDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-4xl mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center min-h-[100dvh] md:min-h-[80dvh]"
+      className={cn(
+        "w-full max-w-4xl mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center min-h-[100dvh] md:min-h-[80dvh]",
+        className
+      )}
     >
       {children}
     </MotionDiv>
@@ -296,17 +299,17 @@ export default function App() {
       <div className="shape-dot bg-[#7bd5ff] bottom-[14%] left-[8%]" />
       <div className="shape-dot bg-[#ffd86b] top-[24%] right-[18%]" />
 
-      {/* Sound Toggle */}
-      <button 
-        onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-        className="fixed top-6 right-6 p-3 glass rounded-full hover:scale-110 transition-transform z-50 text-sky-600"
-      >
-        {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
-      </button>
-
       <AnimatePresence mode="wait">
         {gameState === 'start' && (
           <ScreenWrapper key="start">
+            <div className="w-full flex justify-end mb-4">
+              <button 
+                onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
+              >
+                {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
+              </button>
+            </div>
             <motion.div 
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ repeat: Infinity, duration: 6 }}
@@ -314,8 +317,9 @@ export default function App() {
             >
               <Star size={100} className="text-orange-500 fill-white/35" strokeWidth={1.5} />
             </motion.div>
-            <h1 className="display-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight drop-shadow-sm">
-              九九乘法<span className="text-orange-500">大挑戰</span>
+            <h1 className="display-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight leading-[1.08] md:leading-none drop-shadow-sm text-center">
+              九九乘法
+              <span className="block text-orange-500 md:inline">大挑戰</span>
             </h1>
             <p className="text-xl text-slate-600 mb-12 font-bold max-w-xl text-center leading-relaxed">
               迎接挑戰，成為乘法大師！準備好在壓力下展現你的反應力了嗎？
@@ -331,12 +335,20 @@ export default function App() {
 
         {gameState === 'settings' && (
           <ScreenWrapper key="settings">
-            <div className="glass p-8 md:p-12 rounded-[2.5rem] w-full max-w-2xl text-center">
-              <h2 className="display-font text-4xl font-black text-sky-900 mb-10 flex items-center justify-center gap-3">
+            <div className="w-full flex justify-end mb-4">
+              <button 
+                onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
+              >
+                {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
+              </button>
+            </div>
+            <div className="glass p-5 sm:p-6 md:p-12 rounded-[2.25rem] md:rounded-[2.5rem] w-full max-w-2xl text-center">
+              <h2 className="display-font text-3xl sm:text-4xl font-black text-sky-900 mb-6 sm:mb-8 md:mb-10 flex items-center justify-center gap-3">
                 <Settings className="text-orange-500" /> 遊戲設定
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10">
                 <ModeCard 
                   active={mode === 'practice'} 
                   onClick={() => setMode('practice')}
@@ -360,71 +372,116 @@ export default function App() {
                 />
               </div>
 
-              {mode !== 'practice' && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mb-10 p-6 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl"
-                >
-                  <label className="block text-sm font-black text-sky-900 mb-4 uppercase tracking-[0.3em]">
-                    {mode === 'blitz' ? '單題秒數' : '總計時限 (秒)'}
-                  </label>
-                  <div className="flex items-center justify-center gap-4">
-                    {[3, 5, 10, 20].map(s => (
-                      <button 
-                        key={s}
-                        onClick={() => setTimeLimit(s)}
-                        className={cn(
-                          "w-14 h-14 rounded-xl font-bold transition-all border-2",
-                          timeLimit === s ? "bg-orange-400 border-orange-400 text-white shadow-lg shadow-orange-200" : "bg-white border-sky-100 text-sky-600 hover:border-sky-300"
-                        )}
-                      >
-                        {mode === 'marathon' ? s * 10 : s}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+              <AnimatePresence initial={false}>
+                {mode !== 'practice' && (
+                  <motion.div 
+                    key="time-limit-panel"
+                    initial={{ opacity: 0, height: 0, y: -8 }}
+                    animate={{ opacity: 1, height: 'auto', y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -8 }}
+                    transition={{ duration: 0.22, ease: 'easeInOut' }}
+                    className="mb-6 sm:mb-8 md:mb-10 overflow-hidden"
+                  >
+                    <div className="p-4 sm:p-5 md:p-6 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl">
+                      <label className="block text-xs sm:text-sm font-black text-sky-900 mb-3 sm:mb-4 uppercase tracking-[0.2em] sm:tracking-[0.3em]">
+                        {mode === 'blitz' ? '單題秒數' : '總計時限 (秒)'}
+                      </label>
+                      <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
+                        {[3, 5, 10, 20].map(s => (
+                          <button 
+                            key={s}
+                            onClick={() => setTimeLimit(s)}
+                            className={cn(
+                              "w-12 h-12 sm:w-14 sm:h-14 rounded-xl font-bold text-sm sm:text-base transition-all border-2",
+                              timeLimit === s ? "bg-orange-400 border-orange-400 text-white shadow-lg shadow-orange-200" : "bg-white border-sky-100 text-sky-600 hover:border-sky-300"
+                            )}
+                          >
+                            {mode === 'marathon' ? s * 10 : s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              <div className="flex gap-4 justify-center">
-                <button onClick={() => setGameState('start')} className="btn-secondary">返回</button>
-                <button onClick={startGame} className="btn-primary px-16">開始！</button>
+              <div className="flex gap-3 sm:gap-4 justify-center">
+                <button onClick={() => setGameState('start')} className="btn-secondary px-5 sm:px-8">返回</button>
+                <button onClick={startGame} className="btn-primary px-8 sm:px-16">開始！</button>
               </div>
             </div>
           </ScreenWrapper>
         )}
 
         {gameState === 'playing' && (
-          <ScreenWrapper key="playing">
+          <ScreenWrapper key="playing" className="justify-start py-4 md:py-8">
             {/* Header: Progress & Score */}
-            <div className="w-full flex justify-between items-center mb-8 px-4">
-              <div className="flex items-center gap-4">
+            <div className="w-full mb-3 sm:mb-6 px-1 sm:px-4">
+              <div className="flex items-center justify-between gap-3 sm:hidden">
                 <button
                   onClick={() => setIsExitConfirmOpen(true)}
-                  className="btn-secondary px-5 py-3 flex items-center gap-2 text-sm"
+                  className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
                 >
                   <X size={18} /> 離開
                 </button>
-                <div className="glass px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2">
-                  <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="glass px-4 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2">
+                    <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
+                  </div>
+                  <button 
+                    onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                    className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
+                    aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
+                  >
+                    {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
+                  </button>
                 </div>
-                {combo > 1 && (
-                <MotionDiv 
-                  initial={{ scale: 0 }} animate={{ scale: 1 }}
-                  className="bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-tighter shadow-lg shadow-pink-200"
-                >
-                  Combo x{combo}
-                </MotionDiv>
-                )}
               </div>
-              <div className="text-slate-500 font-bold text-lg">
-                Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
+
+              <div className="mt-2 flex justify-center sm:hidden">
+                <div className="glass px-4 py-2 rounded-2xl text-slate-500 font-bold text-sm whitespace-nowrap">
+                  Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
+                </div>
+              </div>
+
+              <div className="hidden sm:flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    onClick={() => setIsExitConfirmOpen(true)}
+                    className="btn-secondary px-4 sm:px-5 py-3 flex items-center gap-2 text-sm shrink-0"
+                  >
+                    <X size={18} /> 離開
+                  </button>
+                  <div className="glass px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
+                    <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
+                  </div>
+                  {combo > 1 && (
+                  <MotionDiv 
+                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    className="hidden sm:block bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-tighter shadow-lg shadow-pink-200"
+                  >
+                    Combo x{combo}
+                  </MotionDiv>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                  <div className="glass px-3 sm:px-4 py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap">
+                    Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
+                  </div>
+                  <button 
+                    onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                    className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
+                    aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
+                  >
+                    {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Timer Bar */}
             {mode !== 'practice' && (
-              <div className="w-full h-4 bg-white/70 rounded-full overflow-hidden mb-12 border border-white/60 shadow-inner">
+              <div className="w-full h-3 sm:h-4 bg-white/70 rounded-full overflow-hidden mb-5 sm:mb-12 border border-white/60 shadow-inner">
                 <MotionDiv 
                   className={cn(
                     "h-full transition-colors duration-500",
@@ -436,16 +493,16 @@ export default function App() {
               </div>
             )}
 
-            <div className="flex-1 w-full flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-8">
+            <div className="flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:flex-row lg:items-stretch lg:gap-8">
               {/* Question Display */}
               <div className="flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
-                <div className="mb-5 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-                  <div className="glass px-4 py-2 rounded-full text-sm font-black tracking-[0.25em] text-sky-600 uppercase">
+                <div className="mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:justify-start">
+                  <div className="glass px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
                     {modeLabel}
                   </div>
                   {mode !== 'practice' && (
                     <div className={cn(
-                      "px-4 py-2 rounded-full text-sm font-black tracking-[0.2em] uppercase",
+                      "px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.15em] sm:tracking-[0.2em] uppercase",
                       timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
                     )}>
                       {timerLabel} {timeLeft}s
@@ -453,9 +510,9 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="display-font text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
+                <div className="display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
                   <span>{currentQuestion?.num1}</span>
-                  <span className="text-orange-400 text-6xl md:text-9xl">×</span>
+                  <span className="text-orange-400 text-5xl sm:text-6xl md:text-9xl">×</span>
                   <span>{currentQuestion?.num2}</span>
                 </div>
 
@@ -463,7 +520,7 @@ export default function App() {
                 <MotionDiv 
                   animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
                   className={cn(
-                    "relative w-72 h-36 mt-12 glass rounded-3xl flex items-center justify-center text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
+                    "relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
                     feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
                     feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
                     !feedback && "text-sky-800"
@@ -479,7 +536,7 @@ export default function App() {
                 </MotionDiv>
 
                 <div className={cn(
-                  "mt-4 text-base font-bold tracking-wide text-center lg:text-left",
+                  "mt-3 sm:mt-4 text-sm sm:text-base font-bold tracking-wide text-center lg:text-left",
                   feedback === 'correct' && "text-emerald-500",
                   feedback === 'wrong' && "text-rose-500",
                   !feedback && "text-slate-400"
@@ -489,7 +546,7 @@ export default function App() {
               </div>
 
               {/* Virtual Keypad */}
-              <div className="glass p-4 rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
+              <div className="glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
                 <div className="grid grid-cols-3 gap-2">
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((k) => (
                     <button
@@ -499,7 +556,7 @@ export default function App() {
                         else if (k === 'DEL') handleDelete();
                         else handleInput(k.toString());
                       }}
-                      className="h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
+                      className="h-14 sm:h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-xl sm:text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
                     >
                       {k === 'DEL' ? <Delete className="mx-auto" /> : k}
                     </button>
@@ -508,7 +565,7 @@ export default function App() {
                 <button 
                   onClick={handleSubmit}
                   disabled={!userAnswer || feedback}
-                  className="w-full mt-4 btn-primary display-font py-6 text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
+                  className="w-full mt-3 sm:mt-4 btn-primary display-font py-4 sm:py-6 text-xl sm:text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
                 >
                   CONFIRM
                 </button>
@@ -625,21 +682,21 @@ function ModeCard({ active, onClick, icon, title, desc }) {
     <button 
       onClick={onClick}
       className={cn(
-        "p-6 rounded-3xl border-4 transition-all flex flex-col items-center gap-3 text-center group",
+        "p-3 sm:p-4 md:p-6 rounded-[1.5rem] md:rounded-3xl border-2 md:border-4 transition-all flex flex-col items-center gap-2 md:gap-3 text-center group min-h-[116px] sm:min-h-[132px] md:min-h-0",
         active 
           ? "bg-[linear-gradient(145deg,#67c8ff_0%,#35b98b_100%)] border-transparent text-white shadow-xl scale-105" 
           : "bg-white/95 border-transparent text-slate-500 hover:border-sky-100 hover:text-sky-800"
       )}
     >
       <div className={cn(
-        "p-4 rounded-2xl transition-colors",
+        "p-2.5 sm:p-3 md:p-4 rounded-xl md:rounded-2xl transition-colors",
         active ? "bg-white/20" : "bg-sky-50 text-sky-500 group-hover:bg-[#fff4c7]"
       )}>
-        {React.cloneElement(icon, { size: 32 })}
+        {React.cloneElement(icon, { size: 24, className: "sm:w-7 sm:h-7 md:w-8 md:h-8" })}
       </div>
       <div>
-        <div className="display-font font-black text-xl mb-1">{title}</div>
-        <div className={cn("text-xs font-bold", active ? "text-white/80" : "text-slate-400")}>{desc}</div>
+        <div className="display-font font-black text-sm sm:text-base md:text-xl mb-0.5 md:mb-1 leading-tight">{title}</div>
+        <div className={cn("hidden sm:block text-[11px] md:text-xs font-bold leading-tight", active ? "text-white/80" : "text-slate-400")}>{desc}</div>
       </div>
     </button>
   );
