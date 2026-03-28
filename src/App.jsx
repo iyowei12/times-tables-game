@@ -433,81 +433,83 @@ export default function App() {
               </div>
             )}
 
-            {/* Question Display */}
-            <div className="flex-1 flex flex-col items-center justify-center w-full">
-              <div className="mb-5 flex flex-wrap items-center justify-center gap-3">
-                <div className="glass px-4 py-2 rounded-full text-sm font-black tracking-[0.25em] text-sky-600 uppercase">
-                  {modeLabel}
-                </div>
-                {mode !== 'practice' && (
-                  <div className={cn(
-                    "px-4 py-2 rounded-full text-sm font-black tracking-[0.2em] uppercase",
-                    timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
-                  )}>
-                    {timerLabel} {timeLeft}s
+            <div className="flex-1 w-full flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-8">
+              {/* Question Display */}
+              <div className="flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
+                <div className="mb-5 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                  <div className="glass px-4 py-2 rounded-full text-sm font-black tracking-[0.25em] text-sky-600 uppercase">
+                    {modeLabel}
                   </div>
-                )}
-              </div>
-
-              <div className="display-font text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-4 md:gap-8 drop-shadow-2xl">
-                <span>{currentQuestion?.num1}</span>
-                <span className="text-orange-400 text-6xl md:text-9xl">×</span>
-                <span>{currentQuestion?.num2}</span>
-              </div>
-
-              {/* Input Area */}
-              <MotionDiv 
-                animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
-                className={cn(
-                  "relative w-72 h-36 mt-12 glass rounded-3xl flex items-center justify-center text-8xl font-black transition-colors duration-300",
-                  feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
-                  feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
-                  !feedback && "text-sky-800"
-                )}
-              >
-                {userAnswer || <span className="text-sky-200 opacity-60">?</span>}
-                
-                <AnimatePresence>
-                  {feedback === 'correct' && (
-                    <MotionDiv initial={{ scale: 0 }} animate={{ scale: 1.2, opacity: 0 }} className="absolute -inset-4 border-4 border-emerald-400 rounded-[2rem] pointer-events-none" />
+                  {mode !== 'practice' && (
+                    <div className={cn(
+                      "px-4 py-2 rounded-full text-sm font-black tracking-[0.2em] uppercase",
+                      timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
+                    )}>
+                      {timerLabel} {timeLeft}s
+                    </div>
                   )}
-                </AnimatePresence>
-              </MotionDiv>
+                </div>
 
-              <div className={cn(
-                "mt-4 text-base font-bold tracking-wide",
-                feedback === 'correct' && "text-emerald-500",
-                feedback === 'wrong' && "text-rose-500",
-                !feedback && "text-slate-400"
-              )}>
-                {inputHint}
-              </div>
-            </div>
+                <div className="display-font text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
+                  <span>{currentQuestion?.num1}</span>
+                  <span className="text-orange-400 text-6xl md:text-9xl">×</span>
+                  <span>{currentQuestion?.num2}</span>
+                </div>
 
-            {/* Virtual Keypad */}
-            <div className="mt-12 glass p-4 rounded-[2.5rem] w-full max-w-md">
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((k) => (
-                  <button
-                    key={k}
-                    onClick={() => {
-                      if (k === 'C') setUserAnswer('');
-                      else if (k === 'DEL') handleDelete();
-                      else handleInput(k.toString());
-                    }}
-                    className="h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50"
-                  >
-                    {k === 'DEL' ? <Delete className="mx-auto" /> : k}
-                  </button>
-                ))}
+                {/* Input Area */}
+                <MotionDiv 
+                  animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                  className={cn(
+                    "relative w-72 h-36 mt-12 glass rounded-3xl flex items-center justify-center text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
+                    feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
+                    feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
+                    !feedback && "text-sky-800"
+                  )}
+                >
+                  {userAnswer || <span className="text-sky-200 opacity-60">?</span>}
+                  
+                  <AnimatePresence>
+                    {feedback === 'correct' && (
+                      <MotionDiv initial={{ scale: 0 }} animate={{ scale: 1.2, opacity: 0 }} className="absolute -inset-4 border-4 border-emerald-400 rounded-[2rem] pointer-events-none" />
+                    )}
+                  </AnimatePresence>
+                </MotionDiv>
+
+                <div className={cn(
+                  "mt-4 text-base font-bold tracking-wide text-center lg:text-left",
+                  feedback === 'correct' && "text-emerald-500",
+                  feedback === 'wrong' && "text-rose-500",
+                  !feedback && "text-slate-400"
+                )}>
+                  {inputHint}
+                </div>
               </div>
-              <button 
-                onClick={handleSubmit}
-                disabled={!userAnswer || feedback}
-                className="w-full mt-4 btn-primary display-font py-6 text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
-              >
-                CONFIRM
-              </button>
+
+              {/* Virtual Keypad */}
+              <div className="glass p-4 rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((k) => (
+                    <button
+                      key={k}
+                      onClick={() => {
+                        if (k === 'C') setUserAnswer('');
+                        else if (k === 'DEL') handleDelete();
+                        else handleInput(k.toString());
+                      }}
+                      className="h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
+                    >
+                      {k === 'DEL' ? <Delete className="mx-auto" /> : k}
+                    </button>
+                  ))}
+                </div>
+                <button 
+                  onClick={handleSubmit}
+                  disabled={!userAnswer || feedback}
+                  className="w-full mt-4 btn-primary display-font py-6 text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
+                >
+                  CONFIRM
+                </button>
+              </div>
             </div>
             
           </ScreenWrapper>
