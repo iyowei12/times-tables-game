@@ -18,6 +18,10 @@ function cn(...inputs) {
 const SOUND_CORRECT = 'https://assets.mixkit.co/active_storage/sfx/600/600-preview.mp3';
 const SOUND_WRONG = 'https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3';
 const SOUND_FINISH = 'https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3';
+const SOUND_BGM = '/audio/game-bgm.mp3';
+const BGM_VOLUME = 0.14;
+const BGM_DUCKED_VOLUME = 0.06;
+const BGM_DUCK_MS = 900;
 const MotionDiv = motion.div;
 const QUESTION_POOL = Array.from({ length: 8 }, (_, i) => i + 2).flatMap((num1) =>
   Array.from({ length: 10 - num1 }, (_, offset) => {
@@ -118,12 +122,19 @@ export default function App() {
   const [earnedPoints, setEarnedPoints] = useState(null);
 
   // --- Audio ---
-  const [playCorrect] = useSound(SOUND_CORRECT, { soundEnabled: isSoundEnabled, volume: 0.5 });
-  const [playWrong] = useSound(SOUND_WRONG, { soundEnabled: isSoundEnabled, volume: 0.5 });
-  const [playFinish] = useSound(SOUND_FINISH, { soundEnabled: isSoundEnabled, volume: 0.5 });
+  const [playCorrect] = useSound(SOUND_CORRECT, { soundEnabled: isSoundEnabled, volume: 0.55 });
+  const [playWrong] = useSound(SOUND_WRONG, { soundEnabled: isSoundEnabled, volume: 0.62 });
+  const [playFinish] = useSound(SOUND_FINISH, { soundEnabled: isSoundEnabled, volume: 0.58 });
+  const [playBgm, { stop: stopBgm, sound: bgmSound }] = useSound(SOUND_BGM, {
+    soundEnabled: isSoundEnabled,
+    volume: BGM_VOLUME,
+    loop: true,
+    html5: true,
+  });
 
   const timerRef = useRef(null);
   const transitionTimeoutRef = useRef(null);
+  const bgmDuckTimeoutRef = useRef(null);
   const startTimeRef = useRef(null);
   const questionResolvedRef = useRef(false);
 
@@ -141,6 +152,29 @@ export default function App() {
       transitionTimeoutRef.current = null;
     }
   };
+
+  const clearBgmDuckTimeout = () => {
+    if (bgmDuckTimeoutRef.current) {
+      clearTimeout(bgmDuckTimeoutRef.current);
+      bgmDuckTimeoutRef.current = null;
+    }
+  };
+
+  const setBgmVolume = useCallback((volume) => {
+    if (!bgmSound) return;
+    bgmSound.volume(volume);
+  }, [bgmSound]);
+
+  const duckBgm = useCallback(() => {
+    if (!isSoundEnabled || !bgmSound) return;
+
+    clearBgmDuckTimeout();
+    setBgmVolume(BGM_DUCKED_VOLUME);
+    bgmDuckTimeoutRef.current = window.setTimeout(() => {
+      bgmDuckTimeoutRef.current = null;
+      setBgmVolume(BGM_VOLUME);
+    }, BGM_DUCK_MS);
+  }, [bgmSound, isSoundEnabled, setBgmVolume]);
 
   const currentQuestion = questions[currentIndex];
   const answeredCount = correctCount + history.length;
@@ -178,9 +212,10 @@ export default function App() {
         spread: 70,
         origin: { y: 0.6 }
       });
+      duckBgm();
       playFinish();
     }
-  }, [accuracy, maxCombo, playFinish, score]);
+  }, [accuracy, duckBgm, maxCombo, playFinish, score]);
 
   const nextQuestion = useCallback(() => {
     clearTransitionTimeout();
@@ -219,6 +254,7 @@ export default function App() {
     questionResolvedRef.current = true;
     clearTimer();
     setFeedback('wrong');
+    duckBgm();
     playWrong();
     setCombo(0);
     setHistory((prev) => [
@@ -239,7 +275,7 @@ export default function App() {
       transitionTimeoutRef.current = null;
       nextQuestion();
     }, 1000);
-  }, [currentIndex, feedback, finishGame, mode, nextQuestion, playWrong, questions]);
+  }, [currentIndex, duckBgm, feedback, finishGame, mode, nextQuestion, playWrong, questions]);
 
   const handleInput = useCallback((val) => {
     if (feedback) return;
@@ -269,6 +305,7 @@ export default function App() {
       const earnedScore = getPointsForCombo(combo);
       setFeedback('correct');
       setEarnedPoints(earnedScore);
+      duckBgm();
       playCorrect();
       setScore((prev) => prev + earnedScore);
       setCombo(nextCombo);
@@ -277,6 +314,7 @@ export default function App() {
     } else {
       setFeedback('wrong');
       setEarnedPoints(null);
+      duckBgm();
       playWrong();
       setCombo(0);
       setHistory((prev) => [...prev, { ...currentQ, userAnswer }]);
@@ -287,7 +325,7 @@ export default function App() {
       transitionTimeoutRef.current = null;
       nextQuestion();
     }, 800);
-  }, [combo, currentIndex, feedback, nextQuestion, playCorrect, playWrong, questions, userAnswer]);
+  }, [combo, currentIndex, duckBgm, feedback, nextQuestion, playCorrect, playWrong, questions, userAnswer]);
 
   const startGame = () => {
     clearTimer();
@@ -370,8 +408,32 @@ export default function App() {
     return () => {
       clearTimer();
       clearTransitionTimeout();
+      clearBgmDuckTimeout();
+      stopBgm();
     };
-  }, []);
+  }, [stopBgm]);
+
+  useEffect(() => {
+    if (!bgmSound) return;
+    setBgmVolume(BGM_VOLUME);
+  }, [bgmSound, setBgmVolume]);
+
+  useEffect(() => {
+    if (!isSoundEnabled) {
+      clearBgmDuckTimeout();
+      stopBgm();
+      return;
+    }
+
+    if (gameState === 'start') {
+      clearBgmDuckTimeout();
+      stopBgm();
+      return;
+    }
+
+    playBgm();
+    setBgmVolume(BGM_VOLUME);
+  }, [clearBgmDuckTimeout, gameState, isSoundEnabled, playBgm, setBgmVolume, stopBgm]);
 
   // Keyboard support
   useEffect(() => {
