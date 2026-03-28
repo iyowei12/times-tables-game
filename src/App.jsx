@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   RotateCcw, Star, X, Delete, Zap, Target, Settings, 
-  ArrowRight, Award, Volume2, VolumeX, Infinity
+  ArrowRight, Award, Volume2, VolumeX, Infinity as InfinityIcon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import useSound from 'use-sound';
@@ -131,6 +131,15 @@ export default function App() {
   const bgmAudioRef = useRef(null);
 
   // --- Logic ---
+  const handleModeChange = useCallback((newMode) => {
+    setMode(newMode);
+    if (newMode === 'blitz') {
+      setTimeLimit(5);
+    } else if (newMode === 'marathon' || newMode === 'endless') {
+      setTimeLimit(60);
+    }
+  }, []);
+
   const clearTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -379,20 +388,9 @@ export default function App() {
     };
   }, [gameState, mode, currentIndex, timeLimit, handleTimeout]);
 
-  useEffect(() => {
-    if (mode === 'practice') return;
+  // Deprecated redundant effect to avoid cascading renders
+  // useEffect removed as logic moved to handleModeChange
 
-    if (mode === 'blitz') {
-      if (![3, 5, 10, 20].includes(timeLimit)) {
-        setTimeLimit(5);
-      }
-      return;
-    }
-
-    if (![30, 60, 90, 120].includes(timeLimit)) {
-      setTimeLimit(60);
-    }
-  }, [mode, timeLimit]);
 
   useEffect(() => {
     return () => {
@@ -509,29 +507,29 @@ export default function App() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10">
                 <ModeCard 
                   active={mode === 'practice'} 
-                  onClick={() => setMode('practice')}
+                  onClick={() => handleModeChange('practice')}
                   icon={<Star />} 
                   title="練習模式" 
                   desc="沒有壓力，慢慢來" 
                 />
                 <ModeCard 
                   active={mode === 'blitz'} 
-                  onClick={() => setMode('blitz')}
+                  onClick={() => handleModeChange('blitz')}
                   icon={<Zap />} 
                   title="單題限時" 
                   desc="每張卡片都是挑戰" 
                 />
                 <ModeCard 
                   active={mode === 'marathon'} 
-                  onClick={() => setMode('marathon')}
+                  onClick={() => handleModeChange('marathon')}
                   icon={<Target />} 
                   title="總時挑戰" 
                   desc="速戰速決刷紀錄" 
                 />
                 <ModeCard 
                   active={mode === 'endless'} 
-                  onClick={() => setMode('endless')}
-                  icon={<Infinity />} 
+                  onClick={() => handleModeChange('endless')}
+                  icon={<InfinityIcon />} 
                   title="無限模式" 
                   desc="撐到時間結束為止" 
                 />
