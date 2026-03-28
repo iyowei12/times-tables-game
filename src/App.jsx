@@ -492,7 +492,7 @@ export default function App() {
               onClick={() => setGameState('settings')}
               className="btn-primary display-font flex items-center gap-3 text-2xl group"
             >
-              進入設定 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              START <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
           </ScreenWrapper>
         )}
