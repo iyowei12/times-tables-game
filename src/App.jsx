@@ -400,28 +400,25 @@ export default function App() {
       <div className="shape-dot bg-[#ffb3cf] top-[18%] left-[12%]" />
       <div className="shape-dot bg-[#7bd5ff] bottom-[14%] left-[8%]" />
       <div className="shape-dot bg-[#ffd86b] top-[24%] right-[18%]" />
+      <button
+        onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+        className="fixed top-4 right-4 z-30 p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
+        aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
+      >
+        {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
+      </button>
 
       <AnimatePresence mode="wait">
         {gameState === 'start' && (
           <ScreenWrapper key="start">
-            <div className="w-full flex justify-end mb-4">
-              <button 
-                onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
-              >
-                {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
-              </button>
-            </div>
-            <motion.div 
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 6 }}
-              className="mb-8 p-10 bg-[linear-gradient(135deg,#fff2a8_0%,#ffd08f_100%)] rounded-[3rem] shadow-[inset_0_3px_0_rgba(255,255,255,0.8),0_24px_45px_rgba(255,191,73,0.25)] border-4 border-white"
-            >
+            <div className="hero-badge-swing mb-8 inline-block p-10 bg-[linear-gradient(135deg,#fff2a8_0%,#ffd08f_100%)] rounded-[3rem] shadow-[inset_0_3px_0_rgba(255,255,255,0.8),0_24px_45px_rgba(255,191,73,0.25)] border-4 border-white">
               <Star size={100} className="text-orange-500 fill-white/35" strokeWidth={1.5} />
-            </motion.div>
-            <h1 className="display-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight leading-[1.08] md:leading-none drop-shadow-sm text-center">
-              九九乘法
-              <span className="block text-orange-500 md:inline">大挑戰</span>
+            </div>
+            <h1 className="display-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight leading-none drop-shadow-sm text-center">
+              <span className="flex flex-col items-center gap-3 md:gap-4">
+                <span>九九乘法</span>
+                <span className="text-orange-500">大挑戰</span>
+              </span>
             </h1>
             <p className="text-xl text-slate-600 mb-12 font-bold max-w-xl text-center leading-relaxed">
               迎接挑戰，成為乘法大師！準備好在壓力下展現你的反應力了嗎？
@@ -437,14 +434,6 @@ export default function App() {
 
         {gameState === 'settings' && (
           <ScreenWrapper key="settings">
-            <div className="w-full flex justify-end mb-4">
-              <button 
-                onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
-              >
-                {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
-              </button>
-            </div>
             <div className="glass p-5 sm:p-6 md:p-12 rounded-[2.25rem] md:rounded-[2.5rem] w-full max-w-2xl text-center">
               <h2 className="display-font text-3xl sm:text-4xl font-black text-sky-900 mb-6 sm:mb-8 md:mb-10 flex items-center justify-center gap-3">
                 <Settings className="text-orange-500" /> 遊戲設定
@@ -526,19 +515,12 @@ export default function App() {
           <ScreenWrapper key="playing" className="justify-start py-4 md:py-8">
             {/* Header: Progress & Score */}
             <div className="w-full mb-3 sm:mb-6 px-1 sm:px-4">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-start gap-3">
                 <button
                   onClick={() => setIsExitConfirmOpen(true)}
                   className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
                 >
                   <X size={18} /> 離開
-                </button>
-                <button 
-                  onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                  className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
-                  aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
-                >
-                  {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
                 </button>
               </div>
 

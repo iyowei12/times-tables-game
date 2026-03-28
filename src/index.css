@@ -116,6 +116,11 @@
   box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.35);
 }
 
+.hero-badge-swing {
+  transform-origin: center center;
+  animation: hero-badge-swing 3.6s ease-in-out infinite alternate;
+}
+
 @keyframes float {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -123,5 +128,15 @@
 
   100% {
     transform: translate3d(6vw, 5vh, 0) scale(1.18);
+  }
+}
+
+@keyframes hero-badge-swing {
+  0% {
+    transform: rotate(-6deg) translateY(-1px);
+  }
+
+  100% {
+    transform: rotate(6deg) translateY(0);
   }
 }
