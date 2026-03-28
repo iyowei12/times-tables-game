@@ -115,6 +115,7 @@ export default function App() {
   const [correctCount, setCorrectCount] = useState(0);
   const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
+  const [earnedPoints, setEarnedPoints] = useState(null);
 
   // --- Audio ---
   const [playCorrect] = useSound(SOUND_CORRECT, { soundEnabled: isSoundEnabled, volume: 0.5 });
@@ -186,6 +187,7 @@ export default function App() {
     questionResolvedRef.current = false;
     setFeedback(null);
     setUserAnswer('');
+    setEarnedPoints(null);
 
     if (mode === 'endless') {
       const nextIndex = currentIndex + 1;
@@ -266,6 +268,7 @@ export default function App() {
       const nextCombo = combo + 1;
       const earnedScore = getPointsForCombo(combo);
       setFeedback('correct');
+      setEarnedPoints(earnedScore);
       playCorrect();
       setScore((prev) => prev + earnedScore);
       setCombo(nextCombo);
@@ -273,6 +276,7 @@ export default function App() {
       setCorrectCount((prev) => prev + 1);
     } else {
       setFeedback('wrong');
+      setEarnedPoints(null);
       playWrong();
       setCombo(0);
       setHistory((prev) => [...prev, { ...currentQ, userAnswer }]);
@@ -296,6 +300,7 @@ export default function App() {
     setScore(0);
     setUserAnswer('');
     setFeedback(null);
+    setEarnedPoints(null);
     setHistory([]);
     setCombo(0);
     setMaxCombo(0);
@@ -320,6 +325,7 @@ export default function App() {
     questionResolvedRef.current = false;
     setIsExitConfirmOpen(false);
     setFeedback(null);
+    setEarnedPoints(null);
     setUserAnswer('');
     setGameState('settings');
   }, []);
@@ -621,6 +627,18 @@ export default function App() {
                 )}>
                   {inputHint}
                 </div>
+                <AnimatePresence>
+                  {feedback === 'correct' && earnedPoints !== null && (
+                    <MotionDiv
+                      initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.92 }}
+                      className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200"
+                    >
+                      +{earnedPoints} 分
+                    </MotionDiv>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Virtual Keypad */}
