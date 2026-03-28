@@ -29,6 +29,7 @@
     min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
     color: var(--ink);
     font-family: "Noto Sans TC", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
