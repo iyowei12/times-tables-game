@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   RotateCcw, Star, X, Delete, Zap, Target, Settings, 
-  ArrowRight, Award, Volume2, VolumeX 
+  ArrowRight, Award, Volume2, VolumeX, Infinity
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import useSound from 'use-sound';
@@ -19,6 +19,67 @@ const SOUND_CORRECT = 'https://assets.mixkit.co/active_storage/sfx/600/600-previ
 const SOUND_WRONG = 'https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3';
 const SOUND_FINISH = 'https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3';
 const MotionDiv = motion.div;
+const QUESTION_POOL = Array.from({ length: 8 }, (_, i) => i + 2).flatMap((num1) =>
+  Array.from({ length: 10 - num1 }, (_, offset) => {
+    const num2 = num1 + offset;
+    return { num1, num2, answer: num1 * num2 };
+  })
+);
+
+function generateQuestions(count = 10) {
+  const batch = [];
+
+  for (let i = 0; i < count; i += 1) {
+    const index = Math.floor(Math.random() * QUESTION_POOL.length);
+    batch.push(QUESTION_POOL[index]);
+  }
+
+  return batch;
+}
+
+function getPointsForCombo(combo) {
+  return 10 + Math.min(combo, 10) * 3;
+}
+
+function getResultProfile({ accuracy, maxCombo, score, correctCount, mode }) {
+  if (accuracy >= 95 && maxCombo >= 8) {
+    return {
+      emoji: '👑',
+      title: '乘法傳說',
+      subtitle: '節奏、速度和準度都超強，幾乎沒有破綻。',
+    };
+  }
+
+  if (score >= 180 || maxCombo >= 10 || (mode === 'endless' && correctCount >= 18)) {
+    return {
+      emoji: '🔥',
+      title: '連擊風暴',
+      subtitle: '你越打越順，分數一路往上衝。',
+    };
+  }
+
+  if (accuracy >= 85) {
+    return {
+      emoji: '🌟',
+      title: '心算高手',
+      subtitle: '整體表現很穩，已經有高手的感覺了。',
+    };
+  }
+
+  if (accuracy >= 70 || correctCount >= 8) {
+    return {
+      emoji: '💪',
+      title: '節奏冒險家',
+      subtitle: '你抓到節奏了，再多練一下就會更厲害。',
+    };
+  }
+
+  return {
+    emoji: '🌱',
+    title: '勇敢練習王',
+    subtitle: '每一題都在進步，下一次一定會更強。',
+  };
+}
 
 function ScreenWrapper({ children, className }) {
   return (
@@ -39,7 +100,7 @@ function ScreenWrapper({ children, className }) {
 export default function App() {
   // --- States ---
   const [gameState, setGameState] = useState('start'); // start, settings, playing, result
-  const [mode, setMode] = useState('practice'); // practice, blitz (per question), marathon (total time)
+  const [mode, setMode] = useState('practice'); // practice, blitz (per question), marathon (total time), endless (survival)
   const [timeLimit, setTimeLimit] = useState(5); // seconds
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,6 +111,8 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [combo, setCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
 
@@ -78,28 +141,18 @@ export default function App() {
     }
   };
 
-  const generateQuestions = () => {
-    const pool = [];
-
-    for (let num1 = 2; num1 <= 9; num1 += 1) {
-      for (let num2 = num1; num2 <= 9; num2 += 1) {
-        pool.push({ num1, num2, answer: num1 * num2 });
-      }
-    }
-
-    for (let i = pool.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-
-    return pool.slice(0, 10);
-  };
-
   const currentQuestion = questions[currentIndex];
-  const totalQuestions = questions.length || 10;
-  const accuracy = Math.round((score / (totalQuestions * 10)) * 100);
-  const modeLabel = mode === 'practice' ? '練習模式' : mode === 'blitz' ? '單題限時' : '總時挑戰';
+  const answeredCount = correctCount + history.length;
+  const accuracy = answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0;
+  const modeLabel = mode === 'practice'
+    ? '練習模式'
+    : mode === 'blitz'
+      ? '單題限時'
+      : mode === 'marathon'
+        ? '總時挑戰'
+        : '無限模式';
   const timerLabel = mode === 'blitz' ? '本題剩餘' : '總剩餘';
+  const resultProfile = getResultProfile({ accuracy, maxCombo, score, correctCount, mode });
   const inputHint = feedback === 'correct'
     ? '答對了'
     : feedback === 'wrong'
@@ -118,7 +171,7 @@ export default function App() {
     const timeSpent = (Date.now() - startTimeRef.current) / 1000;
     setTotalTimeSpent(timeSpent);
 
-    if (score >= 80) {
+    if (accuracy >= 85 || maxCombo >= 8 || score >= 180) {
       confetti({
         particleCount: 150,
         spread: 70,
@@ -126,7 +179,7 @@ export default function App() {
       });
       playFinish();
     }
-  }, [playFinish, score]);
+  }, [accuracy, maxCombo, playFinish, score]);
 
   const nextQuestion = useCallback(() => {
     clearTransitionTimeout();
@@ -134,15 +187,29 @@ export default function App() {
     setFeedback(null);
     setUserAnswer('');
 
-    if (currentIndex < 9) {
+    if (mode === 'endless') {
+      const nextIndex = currentIndex + 1;
+
+      if (nextIndex >= questions.length - 5) {
+        setQuestions((prev) => [...prev, ...generateQuestions(12)]);
+      }
+
+      setCurrentIndex(nextIndex);
+      return;
+    }
+
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
+
       if (mode === 'blitz') {
         setTimeLeft(timeLimit);
       }
-    } else {
-      finishGame();
+
+      return;
     }
-  }, [currentIndex, finishGame, mode, timeLimit]);
+
+    finishGame();
+  }, [currentIndex, finishGame, mode, questions.length, timeLimit]);
 
   const handleTimeout = useCallback(() => {
     if (questionResolvedRef.current || feedback) return;
@@ -158,7 +225,7 @@ export default function App() {
     ]);
 
     clearTransitionTimeout();
-    if (mode === 'marathon') {
+    if (mode === 'marathon' || mode === 'endless') {
       transitionTimeoutRef.current = window.setTimeout(() => {
         transitionTimeoutRef.current = null;
         finishGame();
@@ -196,10 +263,14 @@ export default function App() {
     clearTimer();
 
     if (isCorrect) {
+      const nextCombo = combo + 1;
+      const earnedScore = getPointsForCombo(combo);
       setFeedback('correct');
       playCorrect();
-      setScore((prev) => prev + 10);
-      setCombo((prev) => prev + 1);
+      setScore((prev) => prev + earnedScore);
+      setCombo(nextCombo);
+      setMaxCombo((prev) => Math.max(prev, nextCombo));
+      setCorrectCount((prev) => prev + 1);
     } else {
       setFeedback('wrong');
       playWrong();
@@ -212,14 +283,14 @@ export default function App() {
       transitionTimeoutRef.current = null;
       nextQuestion();
     }, 800);
-  }, [currentIndex, feedback, nextQuestion, playCorrect, playWrong, questions, userAnswer]);
+  }, [combo, currentIndex, feedback, nextQuestion, playCorrect, playWrong, questions, userAnswer]);
 
   const startGame = () => {
     clearTimer();
     clearTransitionTimeout();
     questionResolvedRef.current = false;
     setIsExitConfirmOpen(false);
-    const q = generateQuestions();
+    const q = generateQuestions(mode === 'endless' ? 24 : 10);
     setQuestions(q);
     setCurrentIndex(0);
     setScore(0);
@@ -227,13 +298,15 @@ export default function App() {
     setFeedback(null);
     setHistory([]);
     setCombo(0);
+    setMaxCombo(0);
+    setCorrectCount(0);
     setTotalTimeSpent(0);
     setGameState('playing');
 
     if (mode === 'blitz') {
       setTimeLeft(timeLimit);
-    } else if (mode === 'marathon') {
-      setTimeLeft(timeLimit * 10); // 10 questions total
+    } else if (mode === 'marathon' || mode === 'endless') {
+      setTimeLeft(timeLimit);
     } else {
       setTimeLeft(0);
     }
@@ -271,6 +344,21 @@ export default function App() {
       clearTimer();
     };
   }, [gameState, mode, currentIndex, timeLimit, handleTimeout]);
+
+  useEffect(() => {
+    if (mode === 'practice') return;
+
+    if (mode === 'blitz') {
+      if (![3, 5, 10, 20].includes(timeLimit)) {
+        setTimeLimit(5);
+      }
+      return;
+    }
+
+    if (![30, 60, 90, 120].includes(timeLimit)) {
+      setTimeLimit(60);
+    }
+  }, [mode, timeLimit]);
 
   useEffect(() => {
     return () => {
@@ -356,7 +444,7 @@ export default function App() {
                 <Settings className="text-orange-500" /> 遊戲設定
               </h2>
               
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10">
                 <ModeCard 
                   active={mode === 'practice'} 
                   onClick={() => setMode('practice')}
@@ -378,6 +466,13 @@ export default function App() {
                   title="總時挑戰" 
                   desc="速戰速決刷紀錄" 
                 />
+                <ModeCard 
+                  active={mode === 'endless'} 
+                  onClick={() => setMode('endless')}
+                  icon={<Infinity />} 
+                  title="無限模式" 
+                  desc="撐到時間結束為止" 
+                />
               </div>
 
               <AnimatePresence initial={false}>
@@ -392,10 +487,10 @@ export default function App() {
                   >
                     <div className="p-4 sm:p-5 md:p-6 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl">
                       <label className="block text-xs sm:text-sm font-black text-sky-900 mb-3 sm:mb-4 uppercase tracking-[0.2em] sm:tracking-[0.3em]">
-                        {mode === 'blitz' ? '單題秒數' : '總計時限 (秒)'}
+                        {mode === 'blitz' ? '單題秒數' : '總時長 (秒)'}
                       </label>
                       <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
-                        {[3, 5, 10, 20].map(s => (
+                        {(mode === 'blitz' ? [3, 5, 10, 20] : [30, 60, 90, 120]).map(s => (
                           <button 
                             key={s}
                             onClick={() => setTimeLimit(s)}
@@ -404,7 +499,7 @@ export default function App() {
                               timeLimit === s ? "bg-orange-400 border-orange-400 text-white shadow-lg shadow-orange-200" : "bg-white border-sky-100 text-sky-600 hover:border-sky-300"
                             )}
                           >
-                            {mode === 'marathon' ? s * 10 : s}
+                            {s}
                           </button>
                         ))}
                       </div>
@@ -457,7 +552,7 @@ export default function App() {
                   )}
                 </div>
                 <div className="glass px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap shrink-0">
-                  Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
+                  Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' ? '' : ' / 10'}
                 </div>
               </div>
             </div>
@@ -471,7 +566,7 @@ export default function App() {
                     timeLeft < 3 ? "bg-rose-500" : "bg-[linear-gradient(90deg,#67c8ff,#8be9cd)]"
                   )}
                   initial={{ width: '100%' }}
-                  animate={{ width: `${(timeLeft / (mode === 'blitz' ? timeLimit : timeLimit * 10)) * 100}%` }}
+                  animate={{ width: `${(timeLeft / timeLimit) * 100}%` }}
                 />
               </div>
             )}
@@ -564,26 +659,33 @@ export default function App() {
               <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-[#67c8ff] via-[#8be9cd] to-[#ffd86b]" />
               
               <div className="text-[120px] mb-4">
-                {score === 100 ? '👑' : score >= 80 ? '🔥' : score >= 60 ? '👌' : '💪'}
+                {resultProfile.emoji}
               </div>
               
               <h2 className="display-font text-5xl font-black text-sky-900 mb-2">挑戰結束</h2>
               <p className="text-2xl text-slate-500 mb-10 font-bold">
-                {score === 100 ? '太強了！你是乘法之神！' : score >= 80 ? '令人驚嘆的表現！' : '還有進步的空間，加油！'}
+                {resultProfile.title}
+              </p>
+              <p className="text-base sm:text-lg text-slate-500 mb-10 font-bold">
+                {resultProfile.subtitle}
               </p>
 
-              <div className="flex flex-col md:flex-row gap-6 justify-center mb-12">
-                <div className="bg-[linear-gradient(180deg,#ebf8ff_0%,#f6fdff_100%)] p-8 rounded-3xl flex-1 border border-sky-100">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 justify-center mb-12">
+                <div className="bg-[linear-gradient(180deg,#ebf8ff_0%,#f6fdff_100%)] p-6 md:p-8 rounded-3xl border border-sky-100">
                   <div className="text-sm font-bold text-sky-500 uppercase tracking-widest mb-1">總分</div>
-                  <div className="display-font text-7xl font-black text-sky-600">{score}</div>
+                  <div className="display-font text-5xl md:text-7xl font-black text-sky-600">{score}</div>
                 </div>
-                <div className="bg-[linear-gradient(180deg,#f2fff8_0%,#fbfffd_100%)] p-8 rounded-3xl flex-1 border border-emerald-100">
+                <div className="bg-[linear-gradient(180deg,#f2fff8_0%,#fbfffd_100%)] p-6 md:p-8 rounded-3xl border border-emerald-100">
                   <div className="text-sm font-bold text-emerald-500 uppercase tracking-widest mb-1">完成時間</div>
-                  <div className="display-font text-7xl font-black text-emerald-600">{totalTimeSpent.toFixed(1)}<span className="text-2xl ml-1 font-normal opacity-50">s</span></div>
+                  <div className="display-font text-5xl md:text-7xl font-black text-emerald-600">{totalTimeSpent.toFixed(1)}<span className="text-xl md:text-2xl ml-1 font-normal opacity-50">s</span></div>
                 </div>
-                <div className="bg-[linear-gradient(180deg,#fff6da_0%,#fffdf4_100%)] p-8 rounded-3xl flex-1 border border-amber-100">
+                <div className="bg-[linear-gradient(180deg,#fff6da_0%,#fffdf4_100%)] p-6 md:p-8 rounded-3xl border border-amber-100">
                   <div className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-1">正確率</div>
-                  <div className="display-font text-7xl font-black text-amber-600">{accuracy}<span className="text-2xl ml-1 font-normal opacity-50">%</span></div>
+                  <div className="display-font text-5xl md:text-7xl font-black text-amber-600">{accuracy}<span className="text-xl md:text-2xl ml-1 font-normal opacity-50">%</span></div>
+                </div>
+                <div className="bg-[linear-gradient(180deg,#ffe8f2_0%,#fff9fc_100%)] p-6 md:p-8 rounded-3xl border border-pink-100">
+                  <div className="text-sm font-bold text-pink-500 uppercase tracking-widest mb-1">最高連擊</div>
+                  <div className="display-font text-5xl md:text-7xl font-black text-pink-500">{maxCombo}</div>
                 </div>
               </div>
 
