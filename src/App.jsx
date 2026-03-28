@@ -48,6 +48,7 @@ export default function App() {
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [combo, setCombo] = useState(0);
   const [totalTimeSpent, setTotalTimeSpent] = useState(0);
+  const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
 
   // --- Audio ---
   const [playCorrect] = useSound(SOUND_CORRECT, { soundEnabled: isSoundEnabled, volume: 0.5 });
@@ -206,6 +207,7 @@ export default function App() {
     clearTimer();
     clearTransitionTimeout();
     questionResolvedRef.current = false;
+    setIsExitConfirmOpen(false);
     const q = generateQuestions();
     setQuestions(q);
     setCurrentIndex(0);
@@ -232,6 +234,7 @@ export default function App() {
     clearTimer();
     clearTransitionTimeout();
     questionResolvedRef.current = false;
+    setIsExitConfirmOpen(false);
     setFeedback(null);
     setUserAnswer('');
     setGameState('settings');
@@ -397,7 +400,7 @@ export default function App() {
             <div className="w-full flex justify-between items-center mb-8 px-4">
               <div className="flex items-center gap-4">
                 <button
-                  onClick={exitGame}
+                  onClick={() => setIsExitConfirmOpen(true)}
                   className="btn-secondary px-5 py-3 flex items-center gap-2 text-sm"
                 >
                   <X size={18} /> 離開
@@ -572,6 +575,43 @@ export default function App() {
               </div>
             </div>
           </ScreenWrapper>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isExitConfirmOpen && gameState === 'playing' && (
+          <MotionDiv
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-sky-950/25 px-4 backdrop-blur-sm"
+          >
+            <MotionDiv
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              className="glass w-full max-w-md rounded-[2rem] p-8 text-center"
+            >
+              <div className="display-font text-3xl font-black text-sky-900">要先離開嗎？</div>
+              <p className="mt-3 text-slate-600 font-bold leading-relaxed">
+                這一局還在進行中，離開後會回到設定頁，這次作答不會保留。
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  onClick={() => setIsExitConfirmOpen(false)}
+                  className="btn-secondary"
+                >
+                  繼續作答
+                </button>
+                <button
+                  onClick={exitGame}
+                  className="btn-primary"
+                >
+                  確認離開
+                </button>
+              </div>
+            </MotionDiv>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>
