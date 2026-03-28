@@ -652,7 +652,7 @@ export default function App() {
                         else if (k === 'DEL') handleDelete();
                         else handleInput(k.toString());
                       }}
-                      className="h-14 sm:h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-xl sm:text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
+                      className="h-16 sm:h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-xl sm:text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
                     >
                       {k === 'DEL' ? <Delete className="mx-auto" /> : k}
                     </button>
