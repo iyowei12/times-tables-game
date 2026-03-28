@@ -579,7 +579,7 @@ export default function App() {
 
             <div className="flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:flex-row lg:items-stretch lg:gap-8">
               {/* Question Display */}
-              <div className="flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
+              <div className="relative flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
                 <div className="mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:justify-start">
                   <div className="glass px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
                     {modeLabel}
@@ -633,7 +633,7 @@ export default function App() {
                       initial={{ opacity: 0, y: 8, scale: 0.92 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.92 }}
-                      className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200"
+                      className="absolute left-1/2 top-[calc(100%-7rem)] sm:top-[calc(100%-8.5rem)] -translate-x-1/2 px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none lg:left-auto lg:translate-x-0 lg:top-[calc(100%-8.5rem)]"
                     >
                       +{earnedPoints} 分
                     </MotionDiv>
