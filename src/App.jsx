@@ -28,12 +28,22 @@ const QUESTION_POOL = Array.from({ length: 8 }, (_, i) => i + 2).flatMap((num1) 
   })
 );
 
-function generateQuestions(count = 10) {
+function generateQuestions(count = 10, lastQuestion = null) {
   const batch = [];
+  let prev = lastQuestion;
 
   for (let i = 0; i < count; i += 1) {
-    const index = Math.floor(Math.random() * QUESTION_POOL.length);
-    batch.push(QUESTION_POOL[index]);
+    let index;
+    let selected;
+    
+    // 不斷重新抽取，直到題目不等於上一題為止
+    do {
+      index = Math.floor(Math.random() * QUESTION_POOL.length);
+      selected = QUESTION_POOL[index];
+    } while (prev && selected.num1 === prev.num1 && selected.num2 === prev.num2);
+    
+    batch.push(selected);
+    prev = selected;
   }
 
   return batch;
@@ -230,7 +240,7 @@ export default function App() {
       const nextIndex = currentIndex + 1;
 
       if (nextIndex >= questions.length - 5) {
-        setQuestions((prev) => [...prev, ...generateQuestions(12)]);
+        setQuestions((prev) => [...prev, ...generateQuestions(12, prev[prev.length - 1])]);
       }
 
       setCurrentIndex(nextIndex);
