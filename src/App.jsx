@@ -158,11 +158,19 @@ export default function App() {
     ]);
 
     clearTransitionTimeout();
+    if (mode === 'marathon') {
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        transitionTimeoutRef.current = null;
+        finishGame();
+      }, 1000);
+      return;
+    }
+
     transitionTimeoutRef.current = window.setTimeout(() => {
       transitionTimeoutRef.current = null;
       nextQuestion();
     }, 1000);
-  }, [currentIndex, feedback, nextQuestion, playWrong, questions]);
+  }, [currentIndex, feedback, finishGame, mode, nextQuestion, playWrong, questions]);
 
   const handleInput = useCallback((val) => {
     if (feedback) return;
@@ -417,64 +425,39 @@ export default function App() {
           <ScreenWrapper key="playing" className="justify-start py-4 md:py-8">
             {/* Header: Progress & Score */}
             <div className="w-full mb-3 sm:mb-6 px-1 sm:px-4">
-              <div className="flex items-center justify-between gap-3 sm:hidden">
+              <div className="flex items-center justify-between gap-3">
                 <button
                   onClick={() => setIsExitConfirmOpen(true)}
                   className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
                 >
                   <X size={18} /> 離開
                 </button>
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="glass px-4 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2">
-                    <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
-                  </div>
-                  <button 
-                    onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                    className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
-                    aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
-                  >
-                    {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
-                  </button>
-                </div>
+                <button 
+                  onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                  className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
+                  aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
+                >
+                  {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
+                </button>
               </div>
 
-              <div className="mt-2 flex justify-center sm:hidden">
-                <div className="glass px-4 py-2 rounded-2xl text-slate-500 font-bold text-sm whitespace-nowrap">
-                  Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
-                </div>
-              </div>
-
-              <div className="hidden sm:flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <button
-                    onClick={() => setIsExitConfirmOpen(true)}
-                    className="btn-secondary px-4 sm:px-5 py-3 flex items-center gap-2 text-sm shrink-0"
-                  >
-                    <X size={18} /> 離開
-                  </button>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                   <div className="glass px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
                     <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
                   </div>
                   {combo > 1 && (
-                  <MotionDiv 
-                    initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className="hidden sm:block bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-tighter shadow-lg shadow-pink-200"
-                  >
-                    Combo x{combo}
-                  </MotionDiv>
+                    <MotionDiv
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="bg-pink-500 text-white px-3 sm:px-4 py-2 rounded-full font-black text-xs sm:text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
+                    >
+                      Combo x{combo}
+                    </MotionDiv>
                   )}
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                  <div className="glass px-3 sm:px-4 py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap">
-                    Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
-                  </div>
-                  <button 
-                    onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                    className="p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600 shrink-0"
-                    aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
-                  >
-                    {isSoundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
-                  </button>
+                <div className="glass px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap shrink-0">
+                  Question <span className="text-sky-900">{currentIndex + 1}</span> / 10
                 </div>
               </div>
             </div>
