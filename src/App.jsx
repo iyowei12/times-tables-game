@@ -633,7 +633,7 @@ export default function App() {
                       initial={{ opacity: 0, y: 10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.92 }}
-                      className="absolute right-[calc(50%-10.5rem)] top-[calc(50%-2.5rem)] sm:right-[calc(50%-12rem)] sm:top-[calc(50%-3rem)] lg:right-[1.5rem] lg:top-[calc(50%-3.5rem)] px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
+                      className="absolute right-[calc(50%-10.5rem)] top-[calc(50%-1.75rem)] sm:right-[calc(50%-12rem)] sm:top-[calc(50%-2.2rem)] lg:right-[1.5rem] lg:top-[calc(50%-2.6rem)] px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
                     >
                       +{earnedPoints} 分
                     </MotionDiv>
