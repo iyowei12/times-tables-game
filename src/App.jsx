@@ -377,6 +377,36 @@ export default function App() {
     setGameState('settings');
   }, []);
 
+  // 防範 iOS Safari/PWA 的下拉刷新 (Pull-to-refresh)
+  useEffect(() => {
+    let startY = 0;
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length > 0) startY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      // 只處理單指滑動
+      if (e.touches.length !== 1) return;
+      const currentY = e.touches[0].clientY;
+      const isPullingDown = currentY > startY;
+
+      // 當我們在畫面最頂端且手勢是往下拉時，禁止預設事件
+      if (window.scrollY <= 0 && isPullingDown) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    // passive: false 才能讓 preventDefault 生效
+    document.addEventListener('touchmove', handleTouchMove, { passive: false, capture: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
+    };
+  }, []);
+
   // Timer Effect
   useEffect(() => {
     if (gameState !== 'playing') return;

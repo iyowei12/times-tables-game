@@ -20,6 +20,10 @@
     --panel-shadow: 0 24px 60px rgba(69, 112, 151, 0.18);
   }
 
+  html {
+    overscroll-behavior: none;
+  }
+
   * {
     box-sizing: border-box;
   }
