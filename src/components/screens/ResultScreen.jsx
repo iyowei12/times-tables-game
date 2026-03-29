@@ -17,6 +17,10 @@ export default function ResultScreen({
   setGameState,
   startGame,
 }) {
+  const statCardClass = 'min-w-0 rounded-3xl border p-5 md:p-6 xl:p-5 2xl:p-6';
+  const statLabelClass = 'mb-2 text-sm font-bold uppercase tracking-[0.25em]';
+  const statValueClass = 'display-font flex items-end justify-center gap-1 whitespace-nowrap text-[clamp(2.2rem,10vw,3.6rem)] font-black leading-none md:text-[clamp(3rem,5vw,4.5rem)] xl:text-[clamp(2.7rem,3.3vw,4.1rem)]';
+
   return (
     <div className="glass p-10 md:p-16 rounded-[3rem] text-center w-full max-w-3xl relative overflow-hidden">
       <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-r from-[#67c8ff] via-[#8be9cd] to-[#ffd86b]" />
@@ -33,22 +37,28 @@ export default function ResultScreen({
         {resultProfile.subtitle}
       </p>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 justify-center mb-12">
-        <div className="bg-[linear-gradient(180deg,#ebf8ff_0%,#f6fdff_100%)] p-6 md:p-8 rounded-3xl border border-sky-100">
-          <div className="text-sm font-bold text-sky-500 uppercase tracking-widest mb-1">總分</div>
-          <div className="display-font text-5xl md:text-7xl font-black text-sky-600">{score}</div>
+      <div className="mb-12 grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
+        <div className={`${statCardClass} bg-[linear-gradient(180deg,#ebf8ff_0%,#f6fdff_100%)] border-sky-100`}>
+          <div className={`${statLabelClass} text-sky-500`}>總分</div>
+          <div className={`${statValueClass} text-sky-600`}>{score}</div>
         </div>
-        <div className="bg-[linear-gradient(180deg,#f2fff8_0%,#fbfffd_100%)] p-6 md:p-8 rounded-3xl border border-emerald-100">
-          <div className="text-sm font-bold text-emerald-500 uppercase tracking-widest mb-1">完成時間</div>
-          <div className="display-font text-5xl md:text-7xl font-black text-emerald-600">{totalTimeSpent.toFixed(1)}<span className="text-xl md:text-2xl ml-1 font-normal opacity-50">s</span></div>
+        <div className={`${statCardClass} bg-[linear-gradient(180deg,#f2fff8_0%,#fbfffd_100%)] border-emerald-100`}>
+          <div className={`${statLabelClass} text-emerald-500`}>完成時間</div>
+          <div className={`${statValueClass} text-emerald-600`}>
+            {totalTimeSpent.toFixed(1)}
+            <span className="text-[clamp(0.9rem,3vw,1.2rem)] font-normal opacity-50 md:text-[clamp(1rem,1.8vw,1.6rem)]">s</span>
+          </div>
         </div>
-        <div className="bg-[linear-gradient(180deg,#fff6da_0%,#fffdf4_100%)] p-6 md:p-8 rounded-3xl border border-amber-100">
-          <div className="text-sm font-bold text-amber-500 uppercase tracking-widest mb-1">正確率</div>
-          <div className="display-font text-5xl md:text-7xl font-black text-amber-600">{accuracy}<span className="text-xl md:text-2xl ml-1 font-normal opacity-50">%</span></div>
+        <div className={`${statCardClass} bg-[linear-gradient(180deg,#fff6da_0%,#fffdf4_100%)] border-amber-100`}>
+          <div className={`${statLabelClass} text-amber-500`}>正確率</div>
+          <div className={`${statValueClass} text-amber-600`}>
+            {accuracy}
+            <span className="text-[clamp(0.9rem,3vw,1.2rem)] font-normal opacity-50 md:text-[clamp(1rem,1.8vw,1.6rem)]">%</span>
+          </div>
         </div>
-        <div className="bg-[linear-gradient(180deg,#ffe8f2_0%,#fff9fc_100%)] p-6 md:p-8 rounded-3xl border border-pink-100">
-          <div className="text-sm font-bold text-pink-500 uppercase tracking-widest mb-1">最高連擊</div>
-          <div className="display-font text-5xl md:text-7xl font-black text-pink-500">{maxCombo}</div>
+        <div className={`${statCardClass} bg-[linear-gradient(180deg,#ffe8f2_0%,#fff9fc_100%)] border-pink-100`}>
+          <div className={`${statLabelClass} text-pink-500`}>最高連擊</div>
+          <div className={`${statValueClass} text-pink-500`}>{maxCombo}</div>
         </div>
       </div>
 
