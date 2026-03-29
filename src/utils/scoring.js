@@ -7,6 +7,20 @@ export function getSurvivalTimeLimit(baseTimeLimit, answeredCount) {
 }
 
 export function getResultProfile({ accuracy, maxCombo, score, correctCount, mode }) {
+  if (
+    (mode === 'endless' || mode === 'survival')
+    && accuracy >= 98
+    && maxCombo >= 30
+    && correctCount >= 30
+    && score >= 1000
+  ) {
+    return {
+      emoji: '🪐',
+      title: '無盡神話',
+      subtitle: '只有在無限與生存挑戰裡，近乎完美的連擊與節奏才能登上這個境界。',
+    };
+  }
+
   if (accuracy >= 95 && maxCombo >= 8) {
     return {
       emoji: '👑',
