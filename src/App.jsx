@@ -39,6 +39,8 @@ function ScreenWrapper({ children, className }) {
 export default function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState(null);
   const [showInstallHint, setShowInstallHint] = useState(false);
+  const [isMobileBrowser, setIsMobileBrowser] = useState(false);
+  const [isAndroidBrowser, setIsAndroidBrowser] = useState(false);
   const [isIosSafari, setIsIosSafari] = useState(false);
   const {
     isSoundEnabled,
@@ -133,16 +135,19 @@ export default function App() {
   useEffect(() => {
     const ua = window.navigator.userAgent;
     const isIos = /iPad|iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/.test(ua);
     const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
 
+    setIsMobileBrowser(isMobile);
+    setIsAndroidBrowser(isAndroid);
     setIsIosSafari(isIos && isSafari);
-    setShowInstallHint(!isStandalone && isIos && isSafari);
+    setShowInstallHint(!isStandalone && isMobile);
 
     const handleBeforeInstallPrompt = (event) => {
-      event.preventDefault();
       setInstallPromptEvent(event);
       setShowInstallHint(true);
     };
@@ -231,7 +236,11 @@ export default function App() {
                     ? '按下安裝後，就能像 App 一樣從主畫面直接開啟。'
                     : isIosSafari
                       ? 'iPhone 請用 Safari 開啟，點分享，再選「加入主畫面」。'
-                      : '手機瀏覽器還沒顯示安裝提示時，先停留幾秒並操作一下頁面，再試一次。'}
+                      : isAndroidBrowser
+                        ? 'Android 可先看右上角選單是否有「安裝應用程式」或「加到主畫面」。'
+                        : isMobileBrowser
+                          ? '如果你是 iPhone，請改用 Safari；其他手機瀏覽器可試右上角選單的加入主畫面。'
+                          : '手機瀏覽器還沒顯示安裝提示時，先停留幾秒並操作一下頁面，再試一次。'}
                 </p>
                 {installPromptEvent && (
                   <button
