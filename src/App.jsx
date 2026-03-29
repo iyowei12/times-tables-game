@@ -278,10 +278,28 @@ export default function App() {
             )}
             <button 
               onClick={() => setGameState('settings')}
-              className="btn-primary display-font flex items-center gap-3 text-2xl group"
+              className="btn-primary display-font flex items-center gap-3 text-2xl group mb-4"
             >
               START <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
+            {installPromptEvent && (
+              <button
+                onClick={async () => {
+                  try {
+                    installPromptEvent.prompt();
+                    const { outcome } = await installPromptEvent.userChoice;
+                    if (outcome === 'accepted') {
+                      setInstallPromptEvent(null);
+                    }
+                  } catch (e) {
+                    console.error('PWA prompt error:', e);
+                  }
+                }}
+                className="btn-secondary display-font flex items-center gap-2 text-lg mt-2"
+              >
+                安裝到手機桌面
+              </button>
+            )}
           </ScreenWrapper>
         )}
 
