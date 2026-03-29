@@ -10,6 +10,17 @@ function cn(...inputs) {
 
 const MotionDiv = motion.div;
 
+const ExitButton = memo(function ExitButton({ className, setIsExitConfirmOpen }) {
+  return (
+    <button
+      onClick={() => setIsExitConfirmOpen(true)}
+      className={className}
+    >
+      <X size={18} /> 離開
+    </button>
+  );
+});
+
 const ComboBadge = memo(function ComboBadge({ combo, className }) {
   if (combo <= 1) return null;
 
@@ -32,22 +43,11 @@ const TopHeader = memo(function TopHeader({
   mode,
   modeLabel,
   score,
-  setIsExitConfirmOpen,
   timeLeft,
   timerLabel,
 }) {
   return (
-    <div className="playing-header w-full mb-3 sm:mb-6">
-      <div className="flex items-center justify-between gap-3 lg:hidden">
-        <button
-          onClick={() => setIsExitConfirmOpen(true)}
-          className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
-        >
-          <X size={18} /> 離開
-        </button>
-        <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
-      </div>
-
+    <>
       <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="glass glass-stable px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
@@ -65,12 +65,6 @@ const TopHeader = memo(function TopHeader({
 
       <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <button
-            onClick={() => setIsExitConfirmOpen(true)}
-            className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
-          >
-            <X size={18} /> 離開
-          </button>
           <div className="glass glass-stable px-5 py-3 rounded-2xl text-sky-900 font-black text-lg flex items-center gap-2 shrink-0">
             <Award className="text-amber-500" />
             <span className="display-font text-2xl">{score}</span>
@@ -98,7 +92,7 @@ const TopHeader = memo(function TopHeader({
           Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
         </div>
       </div>
-    </div>
+    </>
   );
 });
 
@@ -144,16 +138,32 @@ export default function PlayingScreen({
 }) {
   return (
     <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
-      <TopHeader
-        combo={combo}
-        currentIndex={currentIndex}
-        mode={mode}
-        modeLabel={modeLabel}
-        score={score}
-        setIsExitConfirmOpen={setIsExitConfirmOpen}
-        timeLeft={timeLeft}
-        timerLabel={timerLabel}
-      />
+      <div className="playing-header w-full mb-3 sm:mb-6">
+        <div className="flex items-center justify-between gap-3 lg:hidden">
+          <ExitButton
+            setIsExitConfirmOpen={setIsExitConfirmOpen}
+            className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
+          />
+          <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
+        </div>
+
+        <div className="hidden lg:flex lg:items-center lg:justify-start">
+          <ExitButton
+            setIsExitConfirmOpen={setIsExitConfirmOpen}
+            className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
+          />
+        </div>
+
+        <TopHeader
+          combo={combo}
+          currentIndex={currentIndex}
+          mode={mode}
+          modeLabel={modeLabel}
+          score={score}
+          timeLeft={timeLeft}
+          timerLabel={timerLabel}
+        />
+      </div>
 
       <TimerBar
         currentTimeLimit={currentTimeLimit}
