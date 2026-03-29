@@ -147,6 +147,7 @@ export default function App() {
     setShowDebugTools(new URLSearchParams(window.location.search).get('debugPwa') === '1');
 
     const handleBeforeInstallPrompt = (event) => {
+      event.preventDefault();
       setInstallPromptEvent(event);
     };
 
