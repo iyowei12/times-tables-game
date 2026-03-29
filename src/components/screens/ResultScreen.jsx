@@ -72,11 +72,11 @@ export default function ResultScreen({
         </div>
       )}
 
-      <div className="flex gap-4 justify-center">
-        <button onClick={() => setGameState('settings')} className="btn-secondary flex items-center gap-2">
+      <div className="flex gap-4 justify-center flex-wrap">
+        <button onClick={() => setGameState('settings')} className="btn-secondary inline-flex items-center gap-2 shrink-0 min-w-[8.5rem] justify-center">
           <RotateCcw size={20} /> 重設模式
         </button>
-        <button onClick={startGame} className="btn-primary display-font px-12">再刷一次</button>
+        <button onClick={startGame} className="btn-primary display-font inline-flex items-center px-12 shrink-0 min-w-[8.5rem] justify-center">再刷一次</button>
       </div>
     </div>
   );

@@ -111,6 +111,22 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const updateAppHeight = () => {
+      const nextHeight = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${nextHeight}px`);
+    };
+
+    updateAppHeight();
+    window.visualViewport?.addEventListener('resize', updateAppHeight);
+    window.addEventListener('resize', updateAppHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateAppHeight);
+      window.removeEventListener('resize', updateAppHeight);
+    };
+  }, []);
+
   // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -131,7 +147,7 @@ export default function App() {
 
   return (
     <div
-      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden"
+      className="app-shell relative flex items-center justify-center overflow-hidden"
       onPointerDownCapture={requestAudioStart}
     >
       {/* Decorative Background Shapes */}
@@ -143,7 +159,7 @@ export default function App() {
       <div className="shape-dot bg-[#ffd86b] top-[24%] right-[18%]" />
       <button
         onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-        className="fixed top-4 right-4 z-30 p-3 glass rounded-full hover:scale-110 transition-transform text-sky-600"
+        className="safe-top safe-right-content absolute z-30 glass inline-flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border-2 border-[rgba(103,200,255,0.24)] hover:scale-110 transition-transform text-sky-600 shadow-[0_10px_24px_rgba(112,159,199,0.15)]"
         aria-label={isSoundEnabled ? '關閉聲音' : '開啟聲音'}
       >
         {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}

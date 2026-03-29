@@ -31,15 +31,16 @@ export default function PlayingScreen({
   userAnswer,
 }) {
   return (
-    <>
-      <div className="w-full mb-3 sm:mb-6 px-1 sm:px-4">
-        <div className="flex items-center justify-start gap-3">
+    <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
+      <div className="playing-header w-full mb-3 sm:mb-6">
+        <div className="flex items-center justify-between gap-3">
           <button
             onClick={() => setIsExitConfirmOpen(true)}
             className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
           >
             <X size={18} /> 離開
           </button>
+          <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
         </div>
 
         <div className="mt-3 flex items-center justify-between gap-3">
@@ -64,7 +65,7 @@ export default function PlayingScreen({
       </div>
 
       {mode !== 'mixed' && mode !== 'targeted' && (
-        <div className="w-full h-3 sm:h-4 bg-white/70 rounded-full overflow-hidden mb-5 sm:mb-12 border border-white/60 shadow-inner">
+        <div className="playing-timer w-full h-3 sm:h-4 bg-white/70 rounded-full overflow-hidden mb-5 sm:mb-12 border border-white/60 shadow-inner">
           <MotionDiv
             className={cn(
               "h-full transition-colors duration-500",
@@ -76,9 +77,9 @@ export default function PlayingScreen({
         </div>
       )}
 
-      <div className="flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:flex-row lg:items-stretch lg:gap-8">
-        <div className="relative flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
-          <div className="mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:justify-start">
+      <div className="playing-main flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:flex-row lg:items-stretch lg:gap-8">
+        <div className="playing-stage relative flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
+          <div className="playing-badges mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:justify-start">
             <div className="glass px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
               {modeLabel}
             </div>
@@ -94,7 +95,7 @@ export default function PlayingScreen({
             )}
           </div>
 
-          <div className="display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
+          <div className="playing-equation display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
             <span>{currentQuestion?.num1}</span>
             <span className="text-orange-400 text-5xl sm:text-6xl md:text-9xl">×</span>
             <span>{currentQuestion?.num2}</span>
@@ -103,7 +104,7 @@ export default function PlayingScreen({
           <MotionDiv
             animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
             className={cn(
-              "relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
+              "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
               feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
               feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
               !feedback && "text-sky-800"
@@ -120,7 +121,7 @@ export default function PlayingScreen({
 
           <div
             className={cn(
-              "mt-3 sm:mt-4 text-sm sm:text-base font-bold tracking-wide text-center lg:text-left",
+              "playing-hint mt-3 sm:mt-4 text-sm sm:text-base font-bold tracking-wide text-center lg:text-left",
               feedback === 'correct' && "text-emerald-500",
               feedback === 'wrong' && "text-rose-500",
               !feedback && "text-slate-400"
@@ -142,7 +143,7 @@ export default function PlayingScreen({
           </AnimatePresence>
         </div>
 
-        <div className="glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
+        <div className="playing-keypad glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
           <div className="grid grid-cols-3 gap-2">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((k) => (
               <button
@@ -152,7 +153,7 @@ export default function PlayingScreen({
                   else if (k === 'DEL') handleDelete();
                   else handleInput(k.toString());
                 }}
-                className="h-16 sm:h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-xl sm:text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
+                className="playing-key h-16 sm:h-16 bg-white hover:bg-sky-50 text-sky-900 font-black text-xl sm:text-2xl rounded-2xl shadow-sm transition-all active:scale-90 hover:-translate-y-0.5 border border-sky-50 lg:h-[4.5rem]"
               >
                 {k === 'DEL' ? <Delete className="mx-auto" /> : k}
               </button>
@@ -161,12 +162,12 @@ export default function PlayingScreen({
           <button
             onClick={handleSubmit}
             disabled={!userAnswer || feedback}
-            className="w-full mt-3 sm:mt-4 btn-primary display-font py-4 sm:py-6 text-xl sm:text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
+            className="playing-confirm w-full mt-3 sm:mt-4 btn-primary display-font py-4 sm:py-6 text-xl sm:text-2xl disabled:opacity-50 disabled:grayscale disabled:shadow-none"
           >
             CONFIRM
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
