@@ -33,7 +33,7 @@ export default function PlayingScreen({
   return (
     <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
       <div className="playing-header w-full mb-3 sm:mb-6">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 lg:hidden">
           <button
             onClick={() => setIsExitConfirmOpen(true)}
             className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
@@ -43,7 +43,7 @@ export default function PlayingScreen({
           <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="glass px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
               <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
@@ -62,6 +62,47 @@ export default function PlayingScreen({
             Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
           </div>
         </div>
+
+        <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setIsExitConfirmOpen(true)}
+              className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
+            >
+              <X size={18} /> 離開
+            </button>
+            <div className="glass px-5 py-3 rounded-2xl text-sky-900 font-black text-lg flex items-center gap-2 shrink-0">
+              <Award className="text-amber-500" />
+              <span className="display-font text-2xl">{score}</span>
+            </div>
+            <div className="glass px-4 py-2.5 rounded-full text-sm font-black tracking-[0.2em] text-sky-600 uppercase whitespace-nowrap">
+              {modeLabel}
+            </div>
+            {combo > 1 && (
+              <MotionDiv
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
+              >
+                Combo x{combo}
+              </MotionDiv>
+            )}
+            {mode !== 'mixed' && mode !== 'targeted' && (
+              <div
+                className={cn(
+                  "px-4 py-2.5 rounded-full text-sm font-black tracking-[0.15em] uppercase whitespace-nowrap",
+                  timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
+                )}
+              >
+                {timerLabel} {timeLeft}s
+              </div>
+            )}
+          </div>
+
+          <div className="glass px-4 py-3 rounded-2xl text-slate-500 font-bold text-lg whitespace-nowrap shrink-0">
+            Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
+          </div>
+        </div>
       </div>
 
       {mode !== 'mixed' && mode !== 'targeted' && (
@@ -77,9 +118,9 @@ export default function PlayingScreen({
         </div>
       )}
 
-      <div className="playing-main flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:flex-row lg:items-stretch lg:gap-8">
-        <div className="playing-stage relative flex-1 flex flex-col items-center justify-center lg:items-start lg:justify-center lg:px-6">
-          <div className="playing-badges mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:justify-start">
+      <div className="playing-main flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-center lg:gap-10">
+        <div className="playing-stage relative flex-1 flex flex-col items-center justify-center lg:items-center lg:justify-center lg:px-6">
+          <div className="playing-badges mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:hidden">
             <div className="glass px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
               {modeLabel}
             </div>
@@ -95,16 +136,47 @@ export default function PlayingScreen({
             )}
           </div>
 
-          <div className="playing-equation display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[10rem] xl:text-[12rem]">
+          <div className="playing-equation display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[clamp(10rem,14.5vh,12rem)] lg:gap-3 xl:text-[clamp(11rem,15.5vh,13rem)]">
             <span>{currentQuestion?.num1}</span>
-            <span className="text-orange-400 text-5xl sm:text-6xl md:text-9xl">×</span>
+            <span className="text-orange-400 text-5xl sm:text-6xl md:text-9xl lg:text-[clamp(5rem,7.2vh,6rem)] xl:text-[clamp(5.6rem,8vh,6.8rem)]">×</span>
             <span>{currentQuestion?.num2}</span>
+          </div>
+
+          <div className="hidden lg:flex lg:flex-col lg:items-center lg:gap-5 lg:mt-10">
+            <MotionDiv
+              animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
+              className={cn(
+                "playing-answer playing-answer-desktop relative h-28 w-[14rem] glass rounded-[1.6rem] flex items-center justify-center display-font text-[4.75rem] font-black transition-colors duration-300 xl:h-32 xl:w-[15rem] xl:text-[5.25rem]",
+                feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
+                feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
+                !feedback && "text-sky-800"
+              )}
+            >
+              {userAnswer || <span className="text-sky-200 opacity-60">?</span>}
+
+              <AnimatePresence>
+                {feedback === 'correct' && (
+                  <MotionDiv initial={{ scale: 0 }} animate={{ scale: 1.2, opacity: 0 }} className="absolute -inset-4 border-4 border-emerald-400 rounded-[2.6rem] pointer-events-none" />
+                )}
+              </AnimatePresence>
+            </MotionDiv>
+
+            <div
+              className={cn(
+                "playing-hint min-h-[1.75rem] text-center text-lg font-bold tracking-wide",
+                feedback === 'correct' && "text-emerald-500",
+                feedback === 'wrong' && "text-rose-500",
+                !feedback && "text-slate-400"
+              )}
+            >
+              {inputHint}
+            </div>
           </div>
 
           <MotionDiv
             animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
             className={cn(
-              "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:w-[20rem]",
+              "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:hidden",
               feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
               feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
               !feedback && "text-sky-800"
@@ -121,7 +193,7 @@ export default function PlayingScreen({
 
           <div
             className={cn(
-              "playing-hint mt-3 sm:mt-4 text-sm sm:text-base font-bold tracking-wide text-center lg:text-left",
+              "playing-hint mt-3 sm:mt-4 text-sm sm:text-base font-bold tracking-wide text-center lg:hidden",
               feedback === 'correct' && "text-emerald-500",
               feedback === 'wrong' && "text-rose-500",
               !feedback && "text-slate-400"

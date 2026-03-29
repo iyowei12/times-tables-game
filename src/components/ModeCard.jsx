@@ -11,7 +11,7 @@ export default function ModeCard({ active, onClick, icon, title, desc }) {
     <button
       onClick={onClick}
       className={cn(
-        "p-3 sm:p-4 md:p-6 rounded-[1.5rem] md:rounded-3xl border-2 md:border-4 transition-all flex flex-col items-center gap-2 md:gap-3 text-center group min-h-[136px] sm:min-h-[132px] md:min-h-0",
+        "p-3 sm:p-4 md:p-6 xl:px-7 xl:py-8 rounded-[1.5rem] md:rounded-3xl border-2 md:border-4 transition-all flex flex-col items-center justify-start gap-2 md:gap-3 text-center group min-h-[136px] sm:min-h-[132px] md:min-h-[13rem] xl:min-h-[14.5rem]",
         active
           ? "bg-[linear-gradient(145deg,#67c8ff_0%,#35b98b_100%)] border-transparent text-white shadow-xl scale-105"
           : "bg-white/95 border-transparent text-slate-500 hover:border-sky-100 hover:text-sky-800"

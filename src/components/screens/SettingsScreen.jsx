@@ -23,12 +23,12 @@ export default function SettingsScreen({
   startGame,
 }) {
   return (
-    <div className="glass p-5 sm:p-6 md:p-12 rounded-[2.25rem] md:rounded-[2.5rem] w-full max-w-3xl text-center">
-      <h2 className="display-font text-3xl sm:text-4xl font-black text-sky-900 mb-6 sm:mb-8 md:mb-10 flex items-center justify-center gap-3">
+    <div className="glass w-full max-w-3xl xl:max-w-4xl text-center p-5 sm:p-6 md:px-12 md:py-10 xl:px-14 xl:py-12 rounded-[2.25rem] md:rounded-[2.5rem] xl:min-h-[52rem] flex flex-col">
+      <h2 className="display-font text-3xl sm:text-4xl font-black text-sky-900 mb-6 sm:mb-8 md:mb-10 xl:mb-12 flex items-center justify-center gap-3">
         <Settings className="text-orange-500" /> 遊戲設定
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 xl:gap-5 mb-6 sm:mb-8 md:mb-10">
         <ModeCard active={mode === 'targeted'} onClick={() => handleModeChange('targeted')} icon={<Hash />} title="指定乘數" desc="專心練一個乘數" />
         <ModeCard active={mode === 'mixed'} onClick={() => handleModeChange('mixed')} icon={<Star />} title="混合模式" desc="全部題目混合出題" />
         <ModeCard active={mode === 'blitz'} onClick={() => handleModeChange('blitz')} icon={<Zap />} title="單題限時" desc="每張卡片都是挑戰" />
@@ -47,7 +47,7 @@ export default function SettingsScreen({
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             className="mb-6 sm:mb-8 md:mb-10 overflow-hidden"
           >
-            <div className="p-4 sm:p-5 md:p-6 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl">
+            <div className="mx-auto max-w-2xl p-4 sm:p-5 md:p-6 xl:p-7 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl xl:rounded-[2rem]">
               <label className="block text-xs sm:text-sm font-black text-sky-900 mb-3 sm:mb-4 uppercase tracking-[0.2em] sm:tracking-[0.3em]">
                 指定乘數
               </label>
@@ -82,7 +82,7 @@ export default function SettingsScreen({
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             className="mb-6 sm:mb-8 md:mb-10 overflow-hidden"
           >
-            <div className="p-4 sm:p-5 md:p-6 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl">
+            <div className="mx-auto max-w-2xl p-4 sm:p-5 md:p-6 xl:p-7 bg-[linear-gradient(135deg,rgba(103,200,255,0.12),rgba(155,231,196,0.2))] rounded-2xl xl:rounded-[2rem]">
               <label className="block text-xs sm:text-sm font-black text-sky-900 mb-3 sm:mb-4 uppercase tracking-[0.2em] sm:tracking-[0.3em]">
                 {mode === 'blitz' || mode === 'survival' ? '單題秒數' : '總時長 (秒)'}
               </label>
@@ -110,7 +110,7 @@ export default function SettingsScreen({
         )}
       </AnimatePresence>
 
-      <div className="flex gap-3 sm:gap-4 justify-center">
+      <div className="mt-auto pt-2 md:pt-4 flex gap-3 sm:gap-4 justify-center">
         <button onClick={() => setGameState('start')} className="btn-secondary px-5 sm:px-8">返回</button>
         <button onClick={startGame} className="btn-primary px-8 sm:px-16">開始！</button>
       </div>
