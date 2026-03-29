@@ -92,6 +92,11 @@
   backdrop-filter: blur(18px);
 }
 
+.glass-stable {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 .btn-primary {
   @apply text-white font-black py-4 px-8 rounded-[1.75rem] transition-all active:scale-95 whitespace-nowrap;
   background: linear-gradient(135deg, var(--peach-deep), var(--sun-deep));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, Delete, X } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -9,6 +9,118 @@ function cn(...inputs) {
 }
 
 const MotionDiv = motion.div;
+
+const ComboBadge = memo(function ComboBadge({ combo, className }) {
+  if (combo <= 1) return null;
+
+  return (
+    <MotionDiv
+      key={combo}
+      initial={{ scale: 0.78, y: 10, opacity: 0 }}
+      animate={{ scale: [1, 1.18, 0.94, 1.08, 1], y: [10, -6, 0], opacity: 1 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+      className={className}
+    >
+      Combo x{combo}
+    </MotionDiv>
+  );
+});
+
+const TopHeader = memo(function TopHeader({
+  combo,
+  currentIndex,
+  mode,
+  modeLabel,
+  score,
+  setIsExitConfirmOpen,
+  timeLeft,
+  timerLabel,
+}) {
+  return (
+    <div className="playing-header w-full mb-3 sm:mb-6">
+      <div className="flex items-center justify-between gap-3 lg:hidden">
+        <button
+          onClick={() => setIsExitConfirmOpen(true)}
+          className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
+        >
+          <X size={18} /> 離開
+        </button>
+        <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="glass glass-stable px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
+            <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
+          </div>
+          <ComboBadge
+            combo={combo}
+            className="bg-pink-500 text-white px-3 sm:px-4 py-2 rounded-full font-black text-xs sm:text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
+          />
+        </div>
+        <div className="glass glass-stable px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap shrink-0">
+          Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
+        </div>
+      </div>
+
+      <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            onClick={() => setIsExitConfirmOpen(true)}
+            className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
+          >
+            <X size={18} /> 離開
+          </button>
+          <div className="glass glass-stable px-5 py-3 rounded-2xl text-sky-900 font-black text-lg flex items-center gap-2 shrink-0">
+            <Award className="text-amber-500" />
+            <span className="display-font text-2xl">{score}</span>
+          </div>
+          <div className="glass glass-stable px-4 py-2.5 rounded-full text-sm font-black tracking-[0.2em] text-sky-600 uppercase whitespace-nowrap">
+            {modeLabel}
+          </div>
+          <ComboBadge
+            combo={combo}
+            className="bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
+          />
+          {mode !== 'mixed' && mode !== 'targeted' && (
+            <div
+              className={cn(
+                "glass-stable px-4 py-2.5 rounded-full text-sm font-black tracking-[0.15em] uppercase whitespace-nowrap",
+                timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
+              )}
+            >
+              {timerLabel} {timeLeft}s
+            </div>
+          )}
+        </div>
+
+        <div className="glass glass-stable px-4 py-3 rounded-2xl text-slate-500 font-bold text-lg whitespace-nowrap shrink-0">
+          Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const TimerBar = memo(function TimerBar({ currentTimeLimit, mode, timeLeft }) {
+  if (mode === 'mixed' || mode === 'targeted') return null;
+
+  const widthPercent = currentTimeLimit > 0 ? `${(timeLeft / currentTimeLimit) * 100}%` : '0%';
+
+  return (
+    <div className="playing-timer glass-stable w-full h-3 sm:h-4 bg-white/70 rounded-full overflow-hidden mb-5 sm:mb-12 border border-white/60 shadow-inner">
+      <MotionDiv
+        className={cn(
+          "h-full transition-colors duration-500",
+          timeLeft < 3 ? "bg-rose-500" : "bg-[linear-gradient(90deg,#67c8ff,#8be9cd)]"
+        )}
+        initial={false}
+        animate={{ width: widthPercent }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+      />
+    </div>
+  );
+});
 
 export default function PlayingScreen({
   combo,
@@ -32,96 +144,27 @@ export default function PlayingScreen({
 }) {
   return (
     <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
-      <div className="playing-header w-full mb-3 sm:mb-6">
-        <div className="flex items-center justify-between gap-3 lg:hidden">
-          <button
-            onClick={() => setIsExitConfirmOpen(true)}
-            className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
-          >
-            <X size={18} /> 離開
-          </button>
-          <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
-        </div>
+      <TopHeader
+        combo={combo}
+        currentIndex={currentIndex}
+        mode={mode}
+        modeLabel={modeLabel}
+        score={score}
+        setIsExitConfirmOpen={setIsExitConfirmOpen}
+        timeLeft={timeLeft}
+        timerLabel={timerLabel}
+      />
 
-        <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="glass px-4 sm:px-6 py-3 rounded-2xl text-sky-900 font-black text-xl flex items-center gap-2 shrink-0">
-              <Award className="text-amber-500" /> <span className="display-font text-2xl">{score}</span>
-            </div>
-            {combo > 1 && (
-              <MotionDiv
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="bg-pink-500 text-white px-3 sm:px-4 py-2 rounded-full font-black text-xs sm:text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
-              >
-                Combo x{combo}
-              </MotionDiv>
-            )}
-          </div>
-          <div className="glass px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-slate-500 font-bold text-sm sm:text-lg whitespace-nowrap shrink-0">
-            Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
-          </div>
-        </div>
-
-        <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              onClick={() => setIsExitConfirmOpen(true)}
-              className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
-            >
-              <X size={18} /> 離開
-            </button>
-            <div className="glass px-5 py-3 rounded-2xl text-sky-900 font-black text-lg flex items-center gap-2 shrink-0">
-              <Award className="text-amber-500" />
-              <span className="display-font text-2xl">{score}</span>
-            </div>
-            <div className="glass px-4 py-2.5 rounded-full text-sm font-black tracking-[0.2em] text-sky-600 uppercase whitespace-nowrap">
-              {modeLabel}
-            </div>
-            {combo > 1 && (
-              <MotionDiv
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="bg-pink-500 text-white px-4 py-2 rounded-full font-black text-sm uppercase tracking-[0.14em] shadow-lg shadow-pink-200 whitespace-nowrap"
-              >
-                Combo x{combo}
-              </MotionDiv>
-            )}
-            {mode !== 'mixed' && mode !== 'targeted' && (
-              <div
-                className={cn(
-                  "px-4 py-2.5 rounded-full text-sm font-black tracking-[0.15em] uppercase whitespace-nowrap",
-                  timeLeft <= 3 ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white/90 text-slate-600 border border-sky-100"
-                )}
-              >
-                {timerLabel} {timeLeft}s
-              </div>
-            )}
-          </div>
-
-          <div className="glass px-4 py-3 rounded-2xl text-slate-500 font-bold text-lg whitespace-nowrap shrink-0">
-            Question <span className="text-sky-900">{currentIndex + 1}</span>{mode === 'endless' || mode === 'survival' ? '' : ' / 10'}
-          </div>
-        </div>
-      </div>
-
-      {mode !== 'mixed' && mode !== 'targeted' && (
-        <div className="playing-timer w-full h-3 sm:h-4 bg-white/70 rounded-full overflow-hidden mb-5 sm:mb-12 border border-white/60 shadow-inner">
-          <MotionDiv
-            className={cn(
-              "h-full transition-colors duration-500",
-              timeLeft < 3 ? "bg-rose-500" : "bg-[linear-gradient(90deg,#67c8ff,#8be9cd)]"
-            )}
-            initial={{ width: '100%' }}
-            animate={{ width: `${(timeLeft / currentTimeLimit) * 100}%` }}
-          />
-        </div>
-      )}
+      <TimerBar
+        currentTimeLimit={currentTimeLimit}
+        mode={mode}
+        timeLeft={timeLeft}
+      />
 
       <div className="playing-main flex-1 w-full flex flex-col gap-4 sm:gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-center lg:gap-10">
         <div className="playing-stage relative flex-1 flex flex-col items-center justify-center lg:items-center lg:justify-center lg:px-6">
           <div className="playing-badges mb-3 sm:mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:hidden">
-            <div className="glass px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
+            <div className="glass glass-stable px-4 py-2 rounded-full text-xs sm:text-sm font-black tracking-[0.18em] sm:tracking-[0.25em] text-sky-600 uppercase">
               {modeLabel}
             </div>
             {mode !== 'mixed' && mode !== 'targeted' && (
