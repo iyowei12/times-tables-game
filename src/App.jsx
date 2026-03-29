@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star,
@@ -37,6 +37,9 @@ function ScreenWrapper({ children, className }) {
 }
 
 export default function App() {
+  const [installPromptEvent, setInstallPromptEvent] = useState(null);
+  const [showInstallHint, setShowInstallHint] = useState(false);
+  const [isIosSafari, setIsIosSafari] = useState(false);
   const {
     isSoundEnabled,
     playCorrect,
@@ -127,6 +130,37 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const ua = window.navigator.userAgent;
+    const isIos = /iPad|iPhone|iPod/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+
+    setIsIosSafari(isIos && isSafari);
+    setShowInstallHint(!isStandalone && isIos && isSafari);
+
+    const handleBeforeInstallPrompt = (event) => {
+      event.preventDefault();
+      setInstallPromptEvent(event);
+      setShowInstallHint(true);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPromptEvent(null);
+      setShowInstallHint(false);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
   // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -144,6 +178,14 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, handleDelete, handleInput, handleSubmit]);
+
+  const handleInstallClick = async () => {
+    if (!installPromptEvent) return;
+
+    await installPromptEvent.prompt();
+    await installPromptEvent.userChoice.catch(() => null);
+    setInstallPromptEvent(null);
+  };
 
   return (
     <div
@@ -179,6 +221,28 @@ export default function App() {
             <p className="text-xl text-slate-600 mb-12 font-bold max-w-xl md:max-w-none text-center leading-relaxed md:whitespace-nowrap">
               迎接挑戰，成為乘法大師！準備好在壓力下展現你的反應力了嗎？
             </p>
+            {showInstallHint && (
+              <div className="glass mb-6 w-full max-w-2xl rounded-[2rem] px-5 py-4 text-center shadow-[0_18px_45px_rgba(72,127,168,0.16)]">
+                <div className="text-base font-black text-sky-900 sm:text-lg">
+                  {installPromptEvent ? '把遊戲安裝到手機主畫面' : '把遊戲加入主畫面'}
+                </div>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-slate-600 sm:text-base">
+                  {installPromptEvent
+                    ? '按下安裝後，就能像 App 一樣從主畫面直接開啟。'
+                    : isIosSafari
+                      ? 'iPhone 請用 Safari 開啟，點分享，再選「加入主畫面」。'
+                      : '手機瀏覽器還沒顯示安裝提示時，先停留幾秒並操作一下頁面，再試一次。'}
+                </p>
+                {installPromptEvent && (
+                  <button
+                    onClick={handleInstallClick}
+                    className="btn-secondary mt-4 inline-flex items-center justify-center"
+                  >
+                    立即安裝
+                  </button>
+                )}
+              </div>
+            )}
             <button 
               onClick={() => setGameState('settings')}
               className="btn-primary display-font flex items-center gap-3 text-2xl group"
