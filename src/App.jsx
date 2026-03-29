@@ -171,7 +171,7 @@ export default function App() {
             <div className="hero-badge-swing mb-8 inline-block p-10 bg-[linear-gradient(135deg,#fff2a8_0%,#ffd08f_100%)] rounded-[3rem] shadow-[inset_0_3px_0_rgba(255,255,255,0.8),0_24px_45px_rgba(255,191,73,0.25)] border-4 border-white">
               <Star size={100} className="text-orange-500 fill-white/35" strokeWidth={1.5} />
             </div>
-            <h1 className="display-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight leading-none drop-shadow-sm text-center">
+            <h1 className="title-font text-6xl md:text-7xl font-black text-sky-900 mb-4 tracking-tight leading-none drop-shadow-sm text-center">
               <span className="flex flex-col items-center gap-3 md:gap-4">
                 <span>九九乘法</span>
                 <span className="text-orange-500">大挑戰</span>
