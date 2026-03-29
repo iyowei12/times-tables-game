@@ -124,6 +124,10 @@ export default function PlayingScreen({
   timerLabel,
   userAnswer,
 }) {
+  const equationClass = 'playing-equation display-font font-black text-sky-900 leading-none flex items-baseline drop-shadow-2xl';
+  const desktopAnswerClass = 'playing-answer playing-answer-desktop relative glass rounded-[1.9rem] flex items-center justify-center display-font font-black transition-colors duration-300';
+  const mobileAnswerClass = 'playing-answer relative mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font font-black transition-colors duration-300';
+
   return (
     <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
       <div className="playing-header w-full mb-3 sm:mb-6">
@@ -162,7 +166,7 @@ export default function PlayingScreen({
             )}
           </div>
 
-          <div className="playing-equation display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[clamp(10rem,14.5vh,12rem)] lg:gap-3 xl:text-[clamp(11rem,15.5vh,13rem)]">
+          <div className={equationClass}>
             <span>{currentQuestion?.num1}</span>
             <span className="text-orange-400 text-[0.85em]">×</span>
             <span>{currentQuestion?.num2}</span>
@@ -186,7 +190,7 @@ export default function PlayingScreen({
             <MotionDiv
               animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
               className={cn(
-                "playing-answer playing-answer-desktop relative h-28 w-[14rem] glass rounded-[1.6rem] flex items-center justify-center display-font text-[4.75rem] font-black transition-colors duration-300 xl:h-32 xl:w-[15rem] xl:text-[5.25rem]",
+                desktopAnswerClass,
                 feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
                 feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
                 !feedback && "text-sky-800"
@@ -231,7 +235,7 @@ export default function PlayingScreen({
             <MotionDiv
               animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
               className={cn(
-                "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300",
+                mobileAnswerClass,
                 feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
                 feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
                 !feedback && "text-sky-800"
@@ -259,7 +263,7 @@ export default function PlayingScreen({
           </div>
         </div>
 
-        <div className="playing-keypad glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
+        <div className="playing-keypad bg-white/85 border border-white/80 backdrop-blur-0 shadow-none p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
           <div className="grid grid-cols-3 gap-2">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((k) => (
               <button
