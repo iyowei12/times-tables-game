@@ -38,11 +38,8 @@ function ScreenWrapper({ children, className }) {
 
 export default function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState(null);
-  const [showInstallHint, setShowInstallHint] = useState(false);
-  const [isMobileBrowser, setIsMobileBrowser] = useState(false);
-  const [isAndroidBrowser, setIsAndroidBrowser] = useState(false);
-  const [isIosSafari, setIsIosSafari] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
+  const [showDebugTools, setShowDebugTools] = useState(false);
   const [pwaDebugInfo, setPwaDebugInfo] = useState({
     manifestHref: 'loading',
     pageUrl: 'loading',
@@ -147,27 +144,14 @@ export default function App() {
 
   useEffect(() => {
     const ua = window.navigator.userAgent;
-    const isIos = /iPad|iPhone|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua);
-    const isMobile = /Android|iPhone|iPad|iPod|Mobile/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true;
-
-    setIsMobileBrowser(isMobile);
-    setIsAndroidBrowser(isAndroid);
-    setIsIosSafari(isIos && isSafari);
-    setShowInstallHint(!isStandalone && isMobile);
+    setShowDebugTools(new URLSearchParams(window.location.search).get('debugPwa') === '1');
 
     const handleBeforeInstallPrompt = (event) => {
       setInstallPromptEvent(event);
-      setShowInstallHint(true);
     };
 
     const handleAppInstalled = () => {
       setInstallPromptEvent(null);
-      setShowInstallHint(false);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -229,14 +213,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, handleDelete, handleInput, handleSubmit]);
 
-  const handleInstallClick = async () => {
-    if (!installPromptEvent) return;
-
-    await installPromptEvent.prompt();
-    await installPromptEvent.userChoice.catch(() => null);
-    setInstallPromptEvent(null);
-  };
-
   return (
     <div
       className="app-shell relative flex items-center justify-center overflow-hidden"
@@ -271,41 +247,17 @@ export default function App() {
             <p className="text-xl text-slate-600 mb-12 font-bold max-w-xl md:max-w-none text-center leading-relaxed md:whitespace-nowrap">
               迎接挑戰，成為乘法大師！準備好在壓力下展現你的反應力了嗎？
             </p>
-            {showInstallHint && (
-              <div className="glass mb-6 w-full max-w-2xl rounded-[2rem] px-5 py-4 text-center shadow-[0_18px_45px_rgba(72,127,168,0.16)]">
-                <div className="text-base font-black text-sky-900 sm:text-lg">
-                  {installPromptEvent ? '把遊戲安裝到手機主畫面' : '把遊戲加入主畫面'}
-                </div>
-                <p className="mt-2 text-sm font-bold leading-relaxed text-slate-600 sm:text-base">
-                  {installPromptEvent
-                    ? '按下安裝後，就能像 App 一樣從主畫面直接開啟。'
-                    : isIosSafari
-                      ? 'iPhone 請用 Safari 開啟，點分享，再選「加入主畫面」。'
-                      : isAndroidBrowser
-                        ? 'Android 可先看右上角選單是否有「安裝應用程式」或「加到主畫面」。'
-                        : isMobileBrowser
-                          ? '如果你是 iPhone，請改用 Safari；其他手機瀏覽器可試右上角選單的加入主畫面。'
-                          : '手機瀏覽器還沒顯示安裝提示時，先停留幾秒並操作一下頁面，再試一次。'}
-                </p>
-                {installPromptEvent && (
-                  <button
-                    onClick={handleInstallClick}
-                    className="btn-secondary mt-4 inline-flex items-center justify-center"
-                  >
-                    立即安裝
-                  </button>
-                )}
+            {showDebugTools && (
+              <div className="mb-6 flex justify-center">
+                <button
+                  onClick={() => setIsDebugOpen((open) => !open)}
+                  className="btn-secondary text-sm sm:text-base"
+                >
+                  {isDebugOpen ? '關閉 PWA 偵錯' : '開啟 PWA 偵錯'}
+                </button>
               </div>
             )}
-            <div className="mb-6 flex justify-center">
-              <button
-                onClick={() => setIsDebugOpen((open) => !open)}
-                className="btn-secondary text-sm sm:text-base"
-              >
-                {isDebugOpen ? '關閉 PWA 偵錯' : '開啟 PWA 偵錯'}
-              </button>
-            </div>
-            {isDebugOpen && (
+            {showDebugTools && isDebugOpen && (
               <div className="glass mb-8 w-full max-w-3xl rounded-[2rem] px-5 py-5 text-left shadow-[0_18px_45px_rgba(72,127,168,0.16)]">
                 <div className="text-lg font-black text-sky-900">PWA 偵錯資訊</div>
                 <div className="mt-3 space-y-2 break-all text-sm font-bold leading-relaxed text-slate-700">
