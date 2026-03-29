@@ -42,6 +42,19 @@ export default function App() {
   const [isMobileBrowser, setIsMobileBrowser] = useState(false);
   const [isAndroidBrowser, setIsAndroidBrowser] = useState(false);
   const [isIosSafari, setIsIosSafari] = useState(false);
+  const [isDebugOpen, setIsDebugOpen] = useState(false);
+  const [pwaDebugInfo, setPwaDebugInfo] = useState({
+    manifestHref: 'loading',
+    pageUrl: 'loading',
+    userAgent: 'loading',
+    isSecureContext: false,
+    displayModeStandalone: false,
+    navigatorStandalone: false,
+    serviceWorkerSupported: false,
+    serviceWorkerController: false,
+    serviceWorkerRegistered: false,
+    beforeInstallPromptFired: false,
+  });
   const {
     isSoundEnabled,
     playCorrect,
@@ -166,6 +179,38 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const updateDebugInfo = async () => {
+      const manifestLink = document.querySelector('link[rel="manifest"]');
+      const serviceWorkerSupported = 'serviceWorker' in navigator;
+      let serviceWorkerRegistered = false;
+
+      if (serviceWorkerSupported) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          serviceWorkerRegistered = Boolean(registration);
+        } catch {
+          serviceWorkerRegistered = false;
+        }
+      }
+
+      setPwaDebugInfo({
+        manifestHref: manifestLink?.href ?? 'missing',
+        pageUrl: window.location.href,
+        userAgent: navigator.userAgent,
+        isSecureContext: window.isSecureContext,
+        displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
+        navigatorStandalone: window.navigator.standalone === true,
+        serviceWorkerSupported,
+        serviceWorkerController: Boolean(navigator.serviceWorker?.controller),
+        serviceWorkerRegistered,
+        beforeInstallPromptFired: Boolean(installPromptEvent),
+      });
+    };
+
+    updateDebugInfo();
+  }, [installPromptEvent]);
+
   // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -250,6 +295,33 @@ export default function App() {
                     立即安裝
                   </button>
                 )}
+              </div>
+            )}
+            <div className="mb-6 flex justify-center">
+              <button
+                onClick={() => setIsDebugOpen((open) => !open)}
+                className="btn-secondary text-sm sm:text-base"
+              >
+                {isDebugOpen ? '關閉 PWA 偵錯' : '開啟 PWA 偵錯'}
+              </button>
+            </div>
+            {isDebugOpen && (
+              <div className="glass mb-8 w-full max-w-3xl rounded-[2rem] px-5 py-5 text-left shadow-[0_18px_45px_rgba(72,127,168,0.16)]">
+                <div className="text-lg font-black text-sky-900">PWA 偵錯資訊</div>
+                <div className="mt-3 space-y-2 break-all text-sm font-bold leading-relaxed text-slate-700">
+                  <div>目前頁面: {pwaDebugInfo.pageUrl}</div>
+                  <div>Manifest: {pwaDebugInfo.manifestHref}</div>
+                  <div>安全環境: {pwaDebugInfo.isSecureContext ? '是' : '否'}</div>
+                  <div>Android 瀏覽器: {isAndroidBrowser ? '是' : '否'}</div>
+                  <div>手機瀏覽器: {isMobileBrowser ? '是' : '否'}</div>
+                  <div>display-mode standalone: {pwaDebugInfo.displayModeStandalone ? '是' : '否'}</div>
+                  <div>navigator.standalone: {pwaDebugInfo.navigatorStandalone ? '是' : '否'}</div>
+                  <div>支援 Service Worker: {pwaDebugInfo.serviceWorkerSupported ? '是' : '否'}</div>
+                  <div>已註冊 Service Worker: {pwaDebugInfo.serviceWorkerRegistered ? '是' : '否'}</div>
+                  <div>目前受 Service Worker 控制: {pwaDebugInfo.serviceWorkerController ? '是' : '否'}</div>
+                  <div>`beforeinstallprompt` 已觸發: {pwaDebugInfo.beforeInstallPromptFired ? '是' : '否'}</div>
+                  <div>UA: {pwaDebugInfo.userAgent}</div>
+                </div>
               </div>
             )}
             <button 
