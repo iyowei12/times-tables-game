@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Delete, X } from 'lucide-react';
+import { Award, Delete } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,17 +9,6 @@ function cn(...inputs) {
 }
 
 const MotionDiv = motion.div;
-
-const ExitButton = memo(function ExitButton({ className, setIsExitConfirmOpen }) {
-  return (
-    <button
-      onClick={() => setIsExitConfirmOpen(true)}
-      className={className}
-    >
-      <X size={18} /> 離開
-    </button>
-  );
-});
 
 const ComboBadge = memo(function ComboBadge({ combo, className }) {
   if (combo <= 1) return null;
@@ -130,7 +119,6 @@ export default function PlayingScreen({
   mode,
   modeLabel,
   score,
-  setIsExitConfirmOpen,
   setUserAnswer,
   timeLeft,
   timerLabel,
@@ -139,21 +127,6 @@ export default function PlayingScreen({
   return (
     <div className="playing-screen w-full flex flex-1 min-h-0 flex-col overflow-y-auto px-1 sm:px-4">
       <div className="playing-header w-full mb-3 sm:mb-6">
-        <div className="flex items-center justify-between gap-3 lg:hidden">
-          <ExitButton
-            setIsExitConfirmOpen={setIsExitConfirmOpen}
-            className="btn-secondary px-4 py-3 flex items-center gap-2 text-sm shrink-0"
-          />
-          <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
-        </div>
-
-        <div className="hidden lg:flex lg:items-center lg:justify-start">
-          <ExitButton
-            setIsExitConfirmOpen={setIsExitConfirmOpen}
-            className="btn-secondary px-5 py-3.5 flex items-center gap-2 text-sm shrink-0"
-          />
-        </div>
-
         <TopHeader
           combo={combo}
           currentIndex={currentIndex}

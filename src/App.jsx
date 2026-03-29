@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star,
-  ArrowRight, Volume2, VolumeX
+  ArrowRight, Volume2, VolumeX, X
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -164,7 +164,6 @@ export default function App() {
       >
         {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
       </button>
-
       <AnimatePresence mode="wait">
         {gameState === 'start' && (
           <ScreenWrapper key="start">
@@ -207,26 +206,38 @@ export default function App() {
 
         {gameState === 'playing' && (
           <ScreenWrapper key="playing" className="justify-start py-4 md:py-8">
-            <PlayingScreen
-              combo={combo}
-              currentIndex={currentIndex}
-              currentQuestion={currentQuestion}
-              currentTimeLimit={currentTimeLimit}
-              earnedPoints={earnedPoints}
-              feedback={feedback}
-              handleDelete={handleDelete}
-              handleInput={handleInput}
-              handleSubmit={handleSubmit}
-              inputHint={inputHint}
-              mode={mode}
-              modeLabel={modeLabel}
-              score={score}
-              setIsExitConfirmOpen={setIsExitConfirmOpen}
-              setUserAnswer={setUserAnswer}
-              timeLeft={timeLeft}
-              timerLabel={timerLabel}
-              userAnswer={userAnswer}
-            />
+            <div className="w-full">
+              <div className="mb-3 flex items-center justify-between sm:mb-4">
+                <button
+                  onClick={() => setIsExitConfirmOpen(true)}
+                  className="btn-secondary inline-flex items-center gap-2 px-4 py-3 text-sm will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]"
+                  aria-label="離開遊戲"
+                >
+                  <X size={18} /> 離開
+                </button>
+                <div className="h-[3.25rem] w-[3.25rem] shrink-0" aria-hidden="true" />
+              </div>
+
+              <PlayingScreen
+                combo={combo}
+                currentIndex={currentIndex}
+                currentQuestion={currentQuestion}
+                currentTimeLimit={currentTimeLimit}
+                earnedPoints={earnedPoints}
+                feedback={feedback}
+                handleDelete={handleDelete}
+                handleInput={handleInput}
+                handleSubmit={handleSubmit}
+                inputHint={inputHint}
+                mode={mode}
+                modeLabel={modeLabel}
+                score={score}
+                setUserAnswer={setUserAnswer}
+                timeLeft={timeLeft}
+                timerLabel={timerLabel}
+                userAnswer={userAnswer}
+              />
+            </div>
           </ScreenWrapper>
         )}
 
