@@ -33,8 +33,8 @@ export default function SettingsScreen({
         <ModeCard active={mode === 'mixed'} onClick={() => handleModeChange('mixed')} icon={<Star />} title="混合模式" desc="全部題目混合出題" />
         <ModeCard active={mode === 'blitz'} onClick={() => handleModeChange('blitz')} icon={<Zap />} title="單題限時" desc="每張卡片都是挑戰" />
         <ModeCard active={mode === 'marathon'} onClick={() => handleModeChange('marathon')} icon={<Timer />} title="總時挑戰" desc="速戰速決刷紀錄" />
-        <ModeCard active={mode === 'endless'} onClick={() => handleModeChange('endless')} icon={<InfinityIcon />} title="無限模式" desc="撐到時間結束為止" />
-        <ModeCard active={mode === 'survival'} onClick={() => handleModeChange('survival')} icon={<Target />} title="生存模式" desc="每題限時，錯一題就結束" />
+        <ModeCard active={mode === 'endless'} onClick={() => handleModeChange('endless')} icon={<InfinityIcon />} title="無限模式" desc="限時衝分，連擊越高分數越高" />
+        <ModeCard active={mode === 'survival'} onClick={() => handleModeChange('survival')} icon={<Target />} title="生存模式" desc="節奏加快，答錯一題挑戰結束" />
       </div>
 
       <AnimatePresence initial={false}>
