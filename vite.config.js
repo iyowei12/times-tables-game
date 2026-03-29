@@ -12,8 +12,8 @@ export default defineConfig({
       injectRegister: 'inline',
       includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: '九九乘法挑戰',
-        short_name: '九九乘法',
+        name: '九九乘法大挑戰',
+        short_name: '九九乘法大挑戰',
         description: '一個極致流暢且現代的九九乘法練習遊戲',
         theme_color: '#0f172a',
         background_color: '#0f172a',
@@ -48,4 +48,3 @@ export default defineConfig({
     })
   ],
 })
-
