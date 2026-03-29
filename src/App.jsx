@@ -27,7 +27,7 @@ function ScreenWrapper({ children, className }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={cn(
-        "w-full max-w-4xl mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center min-h-[100dvh] md:min-h-[80dvh]",
+        "w-full max-w-4xl mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center min-h-full",
         className
       )}
     >

@@ -46,10 +46,6 @@
     color: var(--ink);
     font-family: "Noto Sans TC", "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
-    padding-top: var(--safe-top);
-    padding-right: var(--safe-right);
-    padding-bottom: var(--safe-bottom);
-    padding-left: var(--safe-left);
     background:
       radial-gradient(circle at top left, rgba(255, 244, 179, 0.95) 0%, rgba(255, 244, 179, 0) 26%),
       radial-gradient(circle at top right, rgba(139, 233, 205, 0.9) 0%, rgba(139, 233, 205, 0) 30%),
@@ -141,7 +137,7 @@
 }
 
 .app-shell {
-  min-height: calc(var(--app-height) - var(--safe-top) - var(--safe-bottom));
+  min-height: var(--app-height);
   padding-top: max(0.75rem, var(--safe-top));
   padding-right: max(0.75rem, var(--safe-right));
   padding-bottom: max(0.75rem, var(--safe-bottom));
