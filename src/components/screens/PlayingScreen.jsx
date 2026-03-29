@@ -164,11 +164,25 @@ export default function PlayingScreen({
 
           <div className="playing-equation display-font text-[6rem] sm:text-[8rem] md:text-[12rem] font-black text-sky-900 leading-none flex items-baseline gap-3 sm:gap-4 md:gap-8 drop-shadow-2xl lg:text-[clamp(10rem,14.5vh,12rem)] lg:gap-3 xl:text-[clamp(11rem,15.5vh,13rem)]">
             <span>{currentQuestion?.num1}</span>
-            <span className="text-orange-400 text-5xl sm:text-6xl md:text-9xl lg:text-[clamp(5rem,7.2vh,6rem)] xl:text-[clamp(5.6rem,8vh,6.8rem)]">×</span>
+            <span className="text-orange-400 text-[0.85em]">×</span>
             <span>{currentQuestion?.num2}</span>
           </div>
 
           <div className="hidden lg:flex lg:flex-col lg:items-center lg:gap-5 lg:mt-10">
+            <div className="relative">
+              <AnimatePresence>
+                {feedback === 'correct' && earnedPoints !== null && (
+                  <MotionDiv
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.92 }}
+                    className="absolute -right-5 -top-4 z-10 px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
+                  >
+                    +{earnedPoints} 分
+                  </MotionDiv>
+                )}
+              </AnimatePresence>
+
             <MotionDiv
               animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
               className={cn(
@@ -186,6 +200,7 @@ export default function PlayingScreen({
                 )}
               </AnimatePresence>
             </MotionDiv>
+            </div>
 
             <div
               className={cn(
@@ -199,23 +214,38 @@ export default function PlayingScreen({
             </div>
           </div>
 
-          <MotionDiv
-            animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
-            className={cn(
-              "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300 lg:hidden",
-              feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
-              feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
-              !feedback && "text-sky-800"
-            )}
-          >
-            {userAnswer || <span className="text-sky-200 opacity-60">?</span>}
-
+          <div className="relative lg:hidden">
             <AnimatePresence>
-              {feedback === 'correct' && (
-                <MotionDiv initial={{ scale: 0 }} animate={{ scale: 1.2, opacity: 0 }} className="absolute -inset-4 border-4 border-emerald-400 rounded-[2rem] pointer-events-none" />
+              {feedback === 'correct' && earnedPoints !== null && (
+                <MotionDiv
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.92 }}
+                  className="absolute -right-8 -top-3 z-10 px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
+                >
+                  +{earnedPoints} 分
+                </MotionDiv>
               )}
             </AnimatePresence>
-          </MotionDiv>
+
+            <MotionDiv
+              animate={feedback === 'wrong' ? { x: [-10, 10, -10, 10, 0] } : {}}
+              className={cn(
+                "playing-answer relative w-64 sm:w-72 h-28 sm:h-36 mt-5 sm:mt-12 glass rounded-3xl flex items-center justify-center display-font text-7xl sm:text-8xl font-black transition-colors duration-300",
+                feedback === 'correct' && "bg-emerald-50 border-emerald-500 text-emerald-600",
+                feedback === 'wrong' && "bg-rose-50 border-rose-500 text-rose-600",
+                !feedback && "text-sky-800"
+              )}
+            >
+              {userAnswer || <span className="text-sky-200 opacity-60">?</span>}
+
+              <AnimatePresence>
+                {feedback === 'correct' && (
+                  <MotionDiv initial={{ scale: 0 }} animate={{ scale: 1.2, opacity: 0 }} className="absolute -inset-4 border-4 border-emerald-400 rounded-[2rem] pointer-events-none" />
+                )}
+              </AnimatePresence>
+            </MotionDiv>
+          </div>
 
           <div
             className={cn(
@@ -227,18 +257,6 @@ export default function PlayingScreen({
           >
             {inputHint}
           </div>
-          <AnimatePresence>
-            {feedback === 'correct' && earnedPoints !== null && (
-              <MotionDiv
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.92 }}
-                className="absolute right-[calc(50%-10.5rem)] top-[calc(50%-1.75rem)] sm:right-[calc(50%-12rem)] sm:top-[calc(50%-2.2rem)] lg:right-[1.5rem] lg:top-[calc(50%-2.6rem)] px-4 py-2 rounded-full bg-emerald-500 text-white display-font text-lg sm:text-xl font-black shadow-lg shadow-emerald-200 pointer-events-none"
-              >
-                +{earnedPoints} 分
-              </MotionDiv>
-            )}
-          </AnimatePresence>
         </div>
 
         <div className="playing-keypad glass p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-md mx-auto lg:mx-0 lg:w-[23rem] lg:min-w-[23rem] lg:self-center">
