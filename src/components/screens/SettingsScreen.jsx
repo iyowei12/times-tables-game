@@ -30,7 +30,7 @@ export default function SettingsScreen({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 xl:gap-5 mb-6 sm:mb-8 md:mb-10">
         <ModeCard active={mode === 'targeted'} onClick={() => handleModeChange('targeted')} icon={<Hash />} title="指定乘數" desc="專心練一個乘數" />
-        <ModeCard active={mode === 'mixed'} onClick={() => handleModeChange('mixed')} icon={<Star />} title="混合模式" desc="全部題目混合出題" />
+        <ModeCard active={mode === 'mixed'} onClick={() => handleModeChange('mixed')} icon={<Star />} title="混合模式" desc="全部題目混合練習" />
         <ModeCard active={mode === 'blitz'} onClick={() => handleModeChange('blitz')} icon={<Zap />} title="單題限時" desc="每張卡片都是挑戰" />
         <ModeCard active={mode === 'marathon'} onClick={() => handleModeChange('marathon')} icon={<Timer />} title="總時挑戰" desc="速戰速決刷紀錄" />
         <ModeCard active={mode === 'endless'} onClick={() => handleModeChange('endless')} icon={<InfinityIcon />} title="無限模式" desc="限時衝高分，連擊越高分數越高" />
