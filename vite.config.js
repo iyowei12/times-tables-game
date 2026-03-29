@@ -14,7 +14,12 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         injectRegister: 'inline',
         includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
+        workbox: {
+          clientsClaim: true,
+          skipWaiting: true,
+        },
         manifest: {
+          id: base,
           name: '九九乘法大挑戰',
           short_name: '九九乘法大挑戰',
           description: '一個極致流暢且現代的九九乘法練習遊戲',
