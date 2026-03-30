@@ -108,7 +108,7 @@ export function useGameSession({ playCorrect, playWrong, playFinish }) {
       const nextIndex = currentIndex + 1;
 
       if (nextIndex >= questions.length - 5) {
-        setQuestions((prev) => [...prev, ...generateQuestions(questionPool, 12, prev[prev.length - 1])]);
+        setQuestions((prev) => [...prev, ...generateQuestions(questionPool, 12, prev)]);
       }
 
       if (mode === 'survival') {
