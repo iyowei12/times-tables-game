@@ -15,8 +15,8 @@ export function getResultProfile({ accuracy, maxCombo, score, correctCount, mode
     && score >= 1000
   ) {
     return {
-      emoji: '🌌',
-      title: '乘法創世神',
+      emoji: '♾️',
+      title: '無限乘法之神',
       subtitle: '只有在無限與生存挑戰裡，近乎完美的連擊與節奏才能登上這個境界。',
     };
   }
