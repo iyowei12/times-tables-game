@@ -10,9 +10,7 @@ export function getResultProfile({ accuracy, maxCombo, score, correctCount, mode
   if (
     (mode === 'endless' || mode === 'survival')
     && accuracy >= 98
-    && maxCombo >= 30
-    && correctCount >= 30
-    && score >= 1000
+    && maxCombo >= 49
   ) {
     return {
       emoji: '🪐',
